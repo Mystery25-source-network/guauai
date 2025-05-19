@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Math Problem Solver</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f4;
+        }
+
+        #container {
+            text-align: center;
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            width: 450px;
+        }
+
+        input,
+        button {
+            padding: 10px;
+            margin: 5px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            outline: none;
+            width: 90%;
+        }
+
+        #output {
+            margin-top: 20px;
+            white-space: pre-wrap;
+            text-align: left;
+            background-color: #eee;
+            padding: 10px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="container">
+        <h2>Math Problem Solver</h2>
+        <input type="text" id="expression" placeholder="Escribe: Resuelve 10+2-3 o Dime sin(30 deg)">
+        <button onclick="solveProblem()">Resolver</button>
+        <pre id="output">Los pasos aparecerán aquí...</pre>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.min.js"></script>
+    <script>
+        const ACTIVATION_WORDS = ["resuelve", "responde", "contesta", "dime"];
+
+        // Convierte grados a radianes automáticamente
+        function toRadiansIfDegrees(expr) {
+            return expr.replace(/([\d.]+)\s*deg/gi, (_, val) => `(${val} * pi / 180)`);
+        }
+
+        function solveProblem() {
+            const rawInput = document.getElementById("expression").value.trim();
+            const output = document.getElementById("output");
+            let steps = [];
+
+            // Verifica palabra clave inicial
+            const lowered = rawInput.toLowerCase();
+            const keyword = ACTIVATION_WORDS.find(w => lowered.startsWith(w));
+            if (!keyword) {
+                output.textContent = "Por favor, comienza tu entrada con: Resuelve, Responde, Contesta o Dime.";
+                return;
+            }
+
+            // Extrae y prepara la expresión
+            const mathPart = rawInput.slice(keyword.length).trim();
+            const expression = toRadiansIfDegrees(mathPart);
+
+            try {
+                // Derivadas
+                if (expression.startsWith("d/dx")) {
+                    const expr = expression.replace("d/dx", "").trim();
+                    const derivative = math.derivative(expr, "x").toString();
+                    steps.push(`Derivada de (${expr}) respecto a x:\n${derivative}`);
+                }
+
+                // Límites (simulado como evaluación cercana)
+                else if (expression.startsWith("limit")) {
+                    const parts = expression.replace("limit", "").trim().split(",");
+                    if (parts.length === 3) {
+                        const [expr, variable, point] = parts.map(s => s.trim());
+                        const parsed = math.parse(expr);
+                        const limitValue = parsed.evaluate({ [variable]: parseFloat(point) });
+                        steps.push(`(Aproximado) Límite de (${expr}) cuando ${variable} → ${point}:\n${limitValue}`);
+                    } else {
+                        throw new Error("Formato inválido para límite. Usa: limit expresión, variable, punto");
+                    }
+                }
+
+                // Integrales simbólicas no soportadas
+                else if (expression.startsWith("integrate")) {
+                    steps.push("Integración simbólica no es soportada por math.js.");
+                    steps.push("Utiliza otro servicio como Wolfram Alpha para cálculos simbólicos.");
+                }
+
+                // Operaciones aritméticas paso a paso
+                else if (/^[\d\s+\-*/().^]+$/.test(expression)) {
+                    // Muestra paso a paso simplificando una operación aritmética
+                    let parsedSteps = expression.match(/(\d+|\+|\-|\*|\/|\^|\(|\))/g);
+                    let currentExpr = "";
+                    for (let i = 0; i < parsedSteps.length; i++) {
+                        currentExpr += parsedSteps[i];
+                        if (i >= 2 && (i % 2 === 2 || i % 2 === 0)) {
+                            try {
+                                const partial = math.evaluate(currentExpr);
+                                steps.push(`${currentExpr} = ${partial}`);
+                            } catch (e) { }
+                        }
+                    }
+                    const result = math.evaluate(expression);
+                    steps.push(`Resultado final = ${result}`);
+                }
+
+                // Evaluación general (trigonometría, expresiones algebraicas)
+                else {
+                    const simplified = math.simplify(expression).toString();
+                    steps.push(`Expresión simplificada: ${simplified}`);
+
+                    const result = math.evaluate(expression);
+                    steps.push(`Resultado: ${result}`);
+                }
+
+                output.textContent = steps.join("\n");
+            } catch (err) {
+                output.textContent = `Error: ${err.message}`;
+            }
+        }
+    </script>
+</body>
+
+</html>

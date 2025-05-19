@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tic Tac Toe</title>
+    <link rel="stylesheet" href="stylectictoe.css">
+    <link rel="icon" href="imggames-modified.png" type="image/png">
+    <style>
+    
+    </style>
+</head>
+
+<body>
+    <h1>Tic Tac Toe</h1>
+
+    <!-- Entrada de nombre y botón de inicio -->
+    <div class="name-select" id="setupSection">
+        <label for="player1">Tu Nombre: </label>
+        <input type="text" id="player1" placeholder="Ingresa tu nombre">
+        <button onclick="startGame()">Iniciar Juego</button>
+    </div>
+
+    <!-- Juego oculto hasta que se inicie -->
+    <div id="gameSection" style="display: none;">
+        <div class="board" id="board"></div>
+        <div id="status">Turno de X</div>
+        <button onclick="resetGame()">Reiniciar</button>
+
+        <div class="stats">
+            <p>Partidas Jugadas: <span id="gamesPlayed">0</span></p>
+            <p><span id="player1Label">Jugador</span> (X) - Victorias: <span id="wins1">0</span>, Empates: <span
+                    id="draws1">0</span>, Derrotas: <span id="losses1">0</span></p>
+            <p>Linkius (O) - Victorias: <span id="wins2">0</span>, Empates: <span id="draws2">0</span>, Derrotas:
+                <span id="losses2">0</span></p>
+        </div>
+
+        <div class="trophy" id="trophy"></div>
+        <button class="back-button" onclick="history.back()">← Regresar</button>
+    </div>
+
+    <script>
+        const board = document.getElementById("board");
+        const statusText = document.getElementById("status");
+        const player1Input = document.getElementById("player1");
+        const player1Label = document.getElementById("player1Label");
+        const setupSection = document.getElementById("setupSection");
+        const gameSection = document.getElementById("gameSection");
+
+        const gamesPlayedText = document.getElementById("gamesPlayed");
+        const wins1Text = document.getElementById("wins1");
+        const draws1Text = document.getElementById("draws1");
+        const losses1Text = document.getElementById("losses1");
+        const wins2Text = document.getElementById("wins2");
+        const draws2Text = document.getElementById("draws2");
+        const losses2Text = document.getElementById("losses2");
+        const trophy = document.getElementById("trophy");
+
+        let cells = [];
+        let currentPlayer = "X";
+        let gameActive = false;
+        let player1Name = "Jugador";
+        let player2Name = "Linkius";
+        let player1Icon = "X";
+        let player2Icon = "O";
+        let player1Stats = { wins: 0, draws: 0, losses: 0 };
+        let player2Stats = { wins: 0, draws: 0, losses: 0 };
+        let totalGames = 0;
+
+        function startGame() {
+            player1Name = player1Input.value || "Jugador";
+            player1Label.textContent = player1Name;
+
+            setupSection.style.display = "none";
+            gameSection.style.display = "block";
+
+            assignIcons();
+            createBoard();
+
+            currentPlayer = "X";
+            gameActive = true;
+            statusText.textContent = `Turno de ${currentPlayer === player1Icon ? player1Name : player2Name} (${currentPlayer})`;
+
+            if (currentPlayer === player2Icon) {
+                setTimeout(botMove, 500);
+            }
+        }
+
+        function resetGame() {
+            assignIcons();
+            createBoard();
+            currentPlayer = "X";
+            gameActive = true;
+            statusText.textContent = `Turno de ${currentPlayer === player1Icon ? player1Name : player2Name} (${currentPlayer})`;
+            trophy.innerHTML = '';
+
+            if (currentPlayer === player2Icon) {
+                setTimeout(botMove, 500);
+            }
+        }
+
+        function assignIcons() {
+            if (Math.random() > 0.5) {
+                player1Icon = "X";
+                player2Icon = "O";
+            } else {
+                player1Icon = "O";
+                player2Icon = "X";
+            }
+        }
+
+        function createBoard() {
+            board.innerHTML = "";
+            cells = [];
+            for (let i = 0; i < 9; i++) {
+                const cell = document.createElement("div");
+                cell.classList.add("cell");
+                cell.addEventListener("click", () => handleMove(i));
+                board.appendChild(cell);
+                cells.push(cell);
+            }
+        }
+
+        function handleMove(index) {
+            if (!gameActive || cells[index].textContent !== "") return;
+            if (currentPlayer !== player1Icon) return; // Solo dejar jugar al humano en su turno
+
+            cells[index].textContent = currentPlayer;
+
+            if (checkWinner()) {
+                updateStats(currentPlayer);
+                statusText.textContent = `${currentPlayer} (${currentPlayer === player1Icon ? player1Name : player2Name}) ganó!`;
+                gameActive = false;
+                setTimeout(() => showTrophy(), 500);
+            } else if (cells.every(cell => cell.textContent !== "")) {
+                player1Stats.draws++;
+                player2Stats.draws++;
+                totalGames++;
+                updateUI();
+                statusText.textContent = "¡Empate!";
+                gameActive = false;
+            } else {
+                currentPlayer = currentPlayer === "X" ? "O" : "X";
+                statusText.textContent = `Turno de ${(currentPlayer === player1Icon ? player1Name : player2Name)} (${currentPlayer})`;
+                if (currentPlayer === player2Icon) {
+                    setTimeout(botMove, 500);
+                }
+            }
+        }
+
+        function botMove() {
+            if (!gameActive) return;
+
+            const move = getBestMove();
+            cells[move].textContent = currentPlayer;
+
+            if (checkWinner()) {
+                updateStats(currentPlayer);
+                statusText.textContent = `${currentPlayer} (${player2Name}) ganó!`;
+                gameActive = false;
+                setTimeout(() => showTrophy(), 500);
+            } else if (cells.every(cell => cell.textContent !== "")) {
+                player1Stats.draws++;
+                player2Stats.draws++;
+                totalGames++;
+                updateUI();
+                statusText.textContent = "¡Empate!";
+                gameActive = false;
+            } else {
+                currentPlayer = currentPlayer === "X" ? "O" : "X";
+                statusText.textContent = `Turno de ${(currentPlayer === player1Icon ? player1Name : player2Name)} (${currentPlayer})`;
+            }
+        }
+
+        function getBestMove() {
+            for (let i = 0; i < 9; i++) {
+                if (cells[i].textContent === "") {
+                    cells[i].textContent = currentPlayer;
+                    if (checkWinner()) {
+                        cells[i].textContent = "";
+                        return i;
+                    }
+                    cells[i].textContent = "";
+                }
+            }
+
+            const opponent = currentPlayer === "X" ? "O" : "X";
+            for (let i = 0; i < 9; i++) {
+                if (cells[i].textContent === "") {
+                    cells[i].textContent = opponent;
+                    if (checkWinner()) {
+                        cells[i].textContent = "";
+                        return i;
+                    }
+                    cells[i].textContent = "";
+                }
+            }
+
+            const preferredMoves = [4, 0, 2, 6, 8, 1, 3, 5, 7];
+            return preferredMoves.find(i => cells[i].textContent === "");
+        }
+
+        function checkWinner() {
+            const winCombos = [
+                [0, 1, 2], [3, 4, 5], [6, 7, 8],
+                [0, 3, 6], [1, 4, 7], [2, 5, 8],
+                [0, 4, 8], [2, 4, 6]
+            ];
+            for (let combo of winCombos) {
+                const [a, b, c] = combo;
+                if (
+                    cells[a].textContent &&
+                    cells[a].textContent === cells[b].textContent &&
+                    cells[a].textContent === cells[c].textContent
+                ) {
+                    cells[a].classList.add("winner");
+                    cells[b].classList.add("winner");
+                    cells[c].classList.add("winner");
+                    return true;
+                }
+            }
+            return false;
+        }
+        function updateStats(winnerIcon) {
+                totalGames++;
+                if (winnerIcon === player1Icon) {
+                    player1Stats.wins++;
+                    player2Stats.losses++;
+                } else {
+                    player2Stats.wins++;
+                    player1Stats.losses++;
+                }
+                updateUI();
+            }
+
+            function updateUI() {
+                gamesPlayedText.textContent = totalGames;
+                wins1Text.textContent = player1Stats.wins;
+                draws1Text.textContent = player1Stats.draws;
+                losses1Text.textContent = player1Stats.losses;
+                wins2Text.textContent = player2Stats.wins;
+                draws2Text.textContent = player2Stats.draws;
+                losses2Text.textContent = player2Stats.losses;
+            }
+
+            function showTrophy() {
+                const winner =
+                    player1Stats.wins > player2Stats.wins
+                        ? player1Name
+                        : player2Stats.wins > player1Stats.wins
+                            ? player2Name
+                            : "Empate";
+
+                if (winner !== "Empate") {
+                    trophy.innerHTML = `🏆<br><strong>${winner}</strong>`;
+                } else {
+                    trophy.innerHTML = '';
+                }
+            }
+        </script>
+        </body>
+        
+        </html> 

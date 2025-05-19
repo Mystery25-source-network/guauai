@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tablero de Ajedrez</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f4;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .chess-board-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+
+        .chess-board {
+            display: grid;
+            grid-template-columns: repeat(8, 60px);
+            grid-template-rows: repeat(8, 60px);
+            border: 3px solid #333;
+            position: relative;
+        }
+
+        .chess-square {
+            width: 60px;
+            height: 60px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        /* Casillas alternas */
+        .chess-square:nth-child(odd) {
+            background-color: #b58863;
+        }
+
+        .chess-square:nth-child(even) {
+            background-color: #f0d9b5;
+        }
+
+        .chess-square:hover {
+            background-color: #ffdb58;
+            box-shadow: 0 0 10px rgba(255, 165, 0, 0.5);
+        }
+
+        /* Piezas */
+        .chess-piece {
+            font-size: 32px;
+        }
+
+        /* Columnas y filas numeradas */
+        .chess-column-label,
+        .chess-row-label {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .chess-column-label {
+            position: absolute;
+            bottom: -30px;
+            width: 100%;
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+        }
+
+        .chess-row-label {
+            position: absolute;
+            right: -30px;
+            height: 100%;
+            display: grid;
+            grid-template-rows: repeat(8, 1fr);
+            justify-items: center;
+            font-size: 18px;
+        }
+
+        /* Piezas blancas y negras */
+        .white-rook,
+        .black-rook,
+        .white-knight,
+        .black-knight,
+        .white-bishop,
+        .black-bishop,
+        .white-queen,
+        .black-queen,
+        .white-king,
+        .black-king,
+        .white-pawn,
+        .black-pawn {
+            font-size: 40px;
+        }
+
+        .white-rook {
+            color: white;
+        }
+
+        .black-rook {
+            color: black;
+        }
+
+        .white-knight {
+            color: white;
+        }
+
+        .black-knight {
+            color: black;
+        }
+
+        .white-bishop {
+            color: white;
+        }
+
+        .black-bishop {
+            color: black;
+        }
+
+        .white-queen {
+            color: white;
+        }
+
+        .black-queen {
+            color: black;
+        }
+
+        .white-king {
+            color: white;
+        }
+
+        .black-king {
+            color: black;
+        }
+
+        .white-pawn {
+            color: white;
+        }
+
+        .black-pawn {
+            color: black;
+        }
+
+        @media (max-width: 600px) {
+            .chess-board {
+                grid-template-columns: repeat(8, 45px);
+                grid-template-rows: repeat(8, 45px);
+            }
+
+            .chess-piece {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="chess-board-container">
+        <div class="chess-board">
+            <!-- Fila 8 (negra) -->
+            <div class="chess-square">
+                <div class="chess-piece black-rook">♜</div>
+            </div>
+            <div class="chess-square">
+                <div class="chess-piece black-knight">♞</div>
+            </div>
+            <div class="chess-square">
+                <div class="chess-piece black-bishop">♝</div>
+            </div>
+            <div class="chess-square">
+                <div class="chess-piece black-queen">♛</div>
+            </div>
+            <div class="chess-square">
+                <div class="chess-piece black-king">♚</div>
+            </div>
+            <div class="chess-square">
+                <div class="chess-piece black-bishop">♝</div>
+            </div>
+            <div class="chess-square">
+                <div class="chess-piece black-knight">♞</div>
+            </div>
+            <div class="chess-square">
+                <div class="chess-piece black-rook">♜</div>
+            </div>
+
+            <!-- Fila 7 (negra) -->
+            <div class="chess-square">
+                <div class="chess-piece black-pawn">♟</div>
+            </div>
+            <div class="chess-square">
+                <div class="chess-piece black-pawn">♟</div>
+            </div>
+            <div class="chess-square">
+                <div class="chess-piece black-pawn">♟</div>
+            </div>
+            <div class="chess-square">
+                <div class="chess-piece black-pawn">♟</div>
+            </div>
+            <div class="chess-square">
+                <div class="chess-piece black-pawn">♟</div>
+            </div>
+            <div class="chess-square">
+                <div class="chess-piece black-pawn">♟</div>
+            </div>
+            <div class="chess-square">
+                <div class="chess-piece black-pawn">♟</div>
+            </div>
+            <div class="chess-square">
+                <div class="chess-piece black-pawn">♟</div>
+            </div>
+
+            <!-- Fila 6 (vacía) -->
+            <div class="chess-square"></div>
+            <div class="chess-square"></div>
+            <div class="chess-square"></div>
+            <div class="chess-square"></div>
+            <div class="chess-square"></div>
+            <div class="chess-square"></div>
+            <div class="chess-square"></div>
+            <div class="chess-square"></div>
+
+            <!-- Fila 5 (vacía) -->
+            <div class="chess-square"></div>
+            <div class="chess-square"></div>
+            <div class="chess-square"></div>
+            <div class="chess-square"></div>
+            <div class="chess-square"></div>
+            <div class="chess-square"></div>
+            <div class="chess-square"></div>
+            <div class="chess-square"></div>
+
+            <!-- Fila 4 (vacía) -->
+            <div class="chess-square"></div>
+            <div class="chess-square"></div>
+            <div class="chess-square"></div>
+            <div class="chess-square"></div>
+            <div class="chess-square"></div>
+            <div class="chess-square"></div>
+            <div class="chess-square"></div>
+            <div class="chess-square"></div>
+
+            <!-- Fila 3 (vacía) -->
+            <div class="chess-square"></div>
+            <div class="chess-square"></div>
+            <div class="chess-square"></div>
+            <div class="chess-square"></div>
+            <div class="chess-square"></div>
+            <div class="chess-square"></div>
+            <div class="chess-square"></div>
+            <div class="chess-square"></div>
+
+            <!-- Fila 2 (blanca) -->
+            <div class="chess-square">
+                <div class="chess-piece white-pawn">♙</div>
+            </div>
+            <div class="chess-square">
+                <div class="chess-piece white-pawn">♙</div>
+            </div>
+            <div class="chess-square">
+                <div class="chess-piece white-pawn">♙</div>
+            </div>
+            <div class="chess-square">
+                <div class="chess-piece white-pawn">♙</div>
+            </div>
+            <div class="chess-square">
+                <div class="chess-piece white-pawn">♙</div>
+            </div>
+            <div class="chess-square">
+                <div class="chess-piece white-pawn">♙</div>
+            </div>
+            <div class="chess-square">
+                <div class="chess-piece white-pawn">♙</div>
+            </div>
+            <div class="chess-square">
+                <div class="chess-piece white-pawn">♙</div>
+            </div>
+
+            <!-- Fila 1 (blanca) -->
+            <div class="chess-square">
+                <div class="chess-piece white-rook">♖</div>
+            </div>
+            <div class="chess-square">
+                <div class="chess-piece white-knight">♘</div>
+            </div>
+            <div class="chess-square">
+                <div class="chess-piece white-bishop">♗</div>
+            </div>
+            <div class="chess-square">
+                <div class="chess-piece white-queen">♕</div>
+            </div>
+            <div class="chess-square">
+                <div class="chess-piece white-king">♔</div>
+            </div>
+            <div class="chess-square">
+                <div class="chess-piece white-bishop">♗</div>
+            </div>
+            <div class="chess-square">
+                <div class="chess-piece white-knight">♘</div>
+            </div>
+            <div class="chess-square">
+                <div class="chess-piece white-rook">♖</div>
+            </div>
+        </div>
+
+        <div class="chess-column-label">
+            <div>A</div>
+            <div>B</div>
+            <div>C</div>
+            <div>D</div>
+            <div>E</div>
+            <div>F</div>
+            <div>G</div>
+            <div>H</div>
+        </div>
+
+        <div class="chess-row-label">
+            <div>1</div>
+            <div>2</div>
+            <div>3</div>
+            <div>4</div>
+            <div>5</div>
+            <div>6</div>
+            <div>7</div>
+            <div>8</div>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pixel Racing</title>>
+    <link rel="stylesheet" href="racingstyle.css">
+    <script src="./racingscript.js"></script>
+    <link rel="icon" href="imggames-modified.png" type="image/png">
+</head>
+<body>
+    <h2>Pixel Racing</h2>
+    <div style="margin-bottom: 10px;">
+    </div>
+    <canvas id="gameCanvas" width="700" height="800"></canvas>
+    <button class="back-button" onclick="history.back()">← Regresar</button>
+    <script>
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+
+        let goku = { x: 120, y: 320, size: 20 };
+        let villains = [];
+        let score = 0;
+        let gameOver = false;
+
+        function drawPixel(x, y, color) {
+            ctx.fillStyle = color;
+            ctx.fillRect(x, y, 4, 4); // Each pixel is 4x4
+        }
+
+        function drawGoku(x, y) {
+            let colors = {
+                skin: "#FFDAB9",
+                hair: "black",
+                gi: "orange",
+                undershirt: "blue",
+                eyes: "white"
+            };
+
+            // Hair
+            drawPixel(x + 4, y, colors.hair);
+            drawPixel(x + 12, y, colors.hair);
+            drawPixel(x + 8, y + 4, colors.hair);
+
+            // Face
+            drawPixel(x + 4, y + 8, colors.skin);
+            drawPixel(x + 12, y + 8, colors.skin);
+            drawPixel(x + 8, y + 8, colors.eyes);
+
+            // Body
+            drawPixel(x + 4, y + 12, colors.undershirt);
+            drawPixel(x + 12, y + 12, colors.undershirt);
+            drawPixel(x + 8, y + 12, colors.gi);
+            drawPixel(x + 8, y + 16, colors.gi);
+
+            // Legs
+            drawPixel(x + 4, y + 20, "blue");
+            drawPixel(x + 12, y + 20, "blue");
+        }
+
+        function drawVillain(x, y, type) {
+            let colors = {
+                frieza: { skin: "#EEE", armor: "purple" },
+                jiren: { skin: "gray", armor: "red" },
+                cell: { skin: "green", armor: "black" }
+            };
+
+            let c = colors[type];
+
+            drawPixel(x + 4, y, c.skin);
+            drawPixel(x + 8, y, c.armor);
+            drawPixel(x + 12, y, c.skin);
+            drawPixel(x + 4, y + 8, c.armor);
+            drawPixel(x + 12, y + 8, c.armor);
+            drawPixel(x + 4, y + 16, c.skin);
+            drawPixel(x + 12, y + 16, c.skin);
+        }
+
+        function moveVillains() {
+            villains.forEach(villain => villain.y += 3);
+            if (villains.length && villains[0].y > canvas.height) {
+                villains.shift();
+                score++;
+            }
+        }
+
+        function checkCollision() {
+            for (let villain of villains) {
+                if (
+                    goku.x < villain.x + 20 &&
+                    goku.x + 20 > villain.x &&
+                    goku.y < villain.y + 20 &&
+                    goku.y + 20 > villain.y
+                ) {
+                    gameOver = true;
+                }
+            }
+        }
+
+        function moveLeft() {
+            if (goku.x > 10) goku.x -= 20;
+        }
+
+        function moveRight() {
+            if (goku.x < canvas.width - goku.size - 10) goku.x += 20;
+        }
+
+        // Soporte para teclado (A, D, flechas)
+        document.addEventListener("keydown", function (e) {
+            if (e.key === "ArrowLeft" || e.key === "a" || e.key === "A") {
+                moveLeft();
+            } else if (e.key === "ArrowRight" || e.key === "d" || e.key === "D") {
+                moveRight();
+            }
+        });
+
+        // Soporte para movimiento con el mouse
+        canvas.addEventListener("mousemove", function (e) {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            goku.x = Math.max(0, Math.min(mouseX - goku.size / 2, canvas.width - goku.size));
+        });
+
+        function update() {
+            if (gameOver) {
+                ctx.fillStyle = "black";
+                ctx.font = "20px Arial";
+                ctx.fillText("Game Over! Score: " + score, 50, 200);
+                return;
+            }
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawGoku(goku.x, goku.y);
+
+            villains.forEach(v => drawVillain(v.x, v.y, v.type));
+            moveVillains();
+            checkCollision();
+
+            if (Math.random() < 0.02) {
+                let types = ["frieza", "jiren", "cell"];
+                villains.push({
+                    x: Math.random() * (canvas.width - 20),
+                    y: 0,
+                    size: 20,
+                    type: types[Math.floor(Math.random() * types.length)]
+                });
+            }
+
+            requestAnimationFrame(update);
+        }
+
+        update();
+        function ajustarAlturaIframe() {
+                const altura = document.body.scrollHeight;
+                window.parent.postMessage({ tipo: "ajustarAltura", altura: altura }, "*");
+            }
+            // Ajustar altura inicial
+            window.addEventListener("load", ajustarAlturaIframe);
+            // Ajustar altura cuando el DOM cambie (por ejemplo, después de iniciar el juego)
+            const observer = new MutationObserver(ajustarAlturaIframe);
+            observer.observe(document.body, { childList: true, subtree: true, attributes: true });
+            // Estado de pausa
+                let isPaused = false;
+                let pauseOverlay = document.createElement("div");
+
+                // Configurar overlay de pausa visual
+                pauseOverlay.style.position = "fixed";
+                pauseOverlay.style.top = "0";
+                pauseOverlay.style.left = "0";
+                pauseOverlay.style.width = "100%";
+                pauseOverlay.style.height = "100%";
+                pauseOverlay.style.backgroundColor = "rgba(0,0,0,0.7)";
+                pauseOverlay.style.color = "#fff";
+                pauseOverlay.style.display = "flex";
+                pauseOverlay.style.justifyContent = "center";
+                pauseOverlay.style.alignItems = "center";
+                pauseOverlay.style.fontSize = "36px";
+                pauseOverlay.style.zIndex = "999";
+                pauseOverlay.textContent = "⏸ Juego pausado";
+                pauseOverlay.style.display = "none";
+                document.body.appendChild(pauseOverlay);
+
+                // Teclado: Espacio o Enter para pausar
+                document.addEventListener("keydown", (e) => {
+                    if (e.code === "Space" || e.code === "Enter") {
+                        togglePause();
+                    }
+                });
+
+                function togglePause() {
+                    isPaused = !isPaused;
+
+                    if (isPaused) {
+                        clearTimeout(timeout);
+                        clearInterval(progressTimeout);
+                        pauseOverlay.style.display = "flex";
+                    } else {
+                        pauseOverlay.style.display = "none";
+
+                        // Reiniciar temporizador si aún no se ha hecho selección
+                        if (selectedCard === null) {
+                            timeout = setTimeout(startProgressBar, 8000);
+                        }
+                    }
+                }
+
+                    const background = new Image();
+                    background.src = 'https://img.freepik.com/vector-gratis/escena-hermoso-paisaje-urbano-edificio-alto-tienda-calle-parque_1150-48985.jpg?semt=ais_hybrid&w=740';
+
+                    background.onload = function () {
+                        ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
+                    }
+                    
+    </script>
+
+</body>
+</html>

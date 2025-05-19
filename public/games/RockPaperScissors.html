@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Piedra, Papel o Tijera</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="icon" href="imggames-modified.png" type="image/png">
+    <style>
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(to right, #667eea, #764ba2);
+    color: white;
+    text-align: center;
+    padding: 40px;
+    margin: 0;
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+#inicio,
+#juego {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 20px;
+    border-radius: 12px;
+    max-width: 100%;
+    width: 100%;
+    margin: 0 auto;
+    box-sizing: border-box;
+}
+
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+
+        input {
+            padding: 10px;
+            border-radius: 5px;
+            border: none;
+            width: 80%;
+            margin-bottom: 10px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background: #ffffff22;
+            border: none;
+            color: white;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background: #ffffff44;
+        }
+
+        .iconos {
+            margin-top: 20px;
+        }
+
+        .iconos i {
+            font-size: 60px;
+            margin: 20px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .iconos i:hover {
+            transform: scale(1.2);
+            color: #ffc107;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .resultados {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+
+        #contador {
+            font-size: 40px;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+
+        .elecciones {
+            font-size: 40px;
+            margin-top: 10px;
+        }
+
+        #marcador {
+            margin-top: 15px;
+            font-size: 18px;
+        }
+        html {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+.back-button {
+    display: block;
+    width: fit-content;
+    margin: 40px auto 0;
+    padding: 12px 24px;
+    font-size: 1em;
+    font-weight: 600;
+    color: var(--button-text);
+    background: linear-gradient(135deg, #4a90e2, #3a78c2);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    text-transform: uppercase;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.back-button:hover {
+    background: linear-gradient(135deg, #3a78c2, #4a90e2);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+    transform: translateY(-2px);
+}
+
+.back-button:active {
+    background: var(--button-active);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    transform: translateY(2px);
+}
+
+@media (max-width: 600px) {
+    .container {
+        padding: 25px;
+    }
+
+    h1 {
+        font-size: 2em;
+    }
+
+    p {
+        font-size: 1em;
+    }
+}
+
+    </style>
+</head>
+
+<body>
+
+    <h1>🪨📄✂️ Piedra, Papel o Tijera</h1>
+
+    <div id="inicio">
+        <p>Ingresa tu nombre:</p>
+        <input type="text" id="nombreJugador" placeholder="Tu nombre">
+        <br><br>
+        <button onclick="iniciarJuego()">Iniciar</button>
+    </div>
+
+    <div id="juego" class="hidden">
+        <h2 id="tituloJugadores"></h2>
+
+        <div class="iconos">
+            <i class="fas fa-hand-rock" onclick="seleccionar('piedra')" title="Piedra"></i>
+            <i class="fas fa-hand-paper" onclick="seleccionar('papel')" title="Papel"></i>
+            <i class="fas fa-hand-scissors" onclick="seleccionar('tijera')" title="Tijera"></i>
+        </div>
+
+        <div id="contador" class="hidden"></div>
+
+        <div class="elecciones" id="elecciones"></div>
+
+        <div class="resultados" id="resultadoTexto"></div>
+
+        <div id="marcador">
+            <p><strong id="nombreJugadorTexto"></strong>: <span id="puntosJugador">0</span></p>
+            <p><strong id="nombreBotTexto"></strong>: <span id="puntosBot">0</span></p>
+        </div>
+        <button class="back-button" onclick="history.back()">← Regresar</button>
+    </div>
+
+    <script>
+        const nombresBot = ["Laura", "Kumpel", "Pepito", "Tronix", "Vanessa"];
+        const opciones = ["piedra", "papel", "tijera"];
+        const iconos = {
+            piedra: '<i class="fas fa-hand-rock"></i>',
+            papel: '<i class="fas fa-hand-paper"></i>',
+            tijera: '<i class="fas fa-hand-scissors"></i>'
+        };
+
+        let nombreJugador = "";
+        let nombreBot = "";
+        let puntosJugador = 0;
+        let puntosBot = 0;
+
+        function obtenerNombreBot() {
+            return nombresBot[Math.floor(Math.random() * nombresBot.length)];
+        }
+
+        function iniciarJuego() {
+            const inputNombre = document.getElementById("nombreJugador");
+            nombreJugador = inputNombre.value.trim();
+
+            if (!nombreJugador) {
+                alert("Por favor, escribe tu nombre.");
+                return;
+            }
+
+            nombreBot = obtenerNombreBot();
+            document.getElementById("inicio").classList.add("hidden");
+            document.getElementById("juego").classList.remove("hidden");
+            actualizarNombres();
+        }
+
+        function actualizarNombres() {
+            document.getElementById("tituloJugadores").textContent = `${nombreJugador} vs ${nombreBot}`;
+            document.getElementById("nombreJugadorTexto").textContent = nombreJugador;
+            document.getElementById("nombreBotTexto").textContent = nombreBot;
+        }
+
+        function seleccionar(eleccionJugador) {
+            const contador = document.getElementById("contador");
+            const resultadoTexto = document.getElementById("resultadoTexto");
+            const eleccionesDiv = document.getElementById("elecciones");
+            contador.classList.remove("hidden");
+            eleccionesDiv.innerHTML = "";
+            resultadoTexto.textContent = "";
+
+            let cuenta = 3;
+            contador.textContent = cuenta;
+
+            const intervalo = setInterval(() => {
+                cuenta--;
+                if (cuenta > 0) {
+                    contador.textContent = cuenta;
+                } else {
+                    clearInterval(intervalo);
+                    contador.classList.add("hidden");
+
+                    const eleccionBot = opciones[Math.floor(Math.random() * 3)];
+
+                    eleccionesDiv.innerHTML = `
+            ${iconos[eleccionJugador]} vs ${iconos[eleccionBot]}
+          `;
+
+                    let resultado = "";
+
+                    if (eleccionJugador === eleccionBot) {
+                        resultado = "¡Empate!";
+                    } else if (
+                        (eleccionJugador === "piedra" && eleccionBot === "tijera") ||
+                        (eleccionJugador === "papel" && eleccionBot === "piedra") ||
+                        (eleccionJugador === "tijera" && eleccionBot === "papel")
+                    ) {
+                        resultado = "¡Ganaste 🎉!";
+                        puntosJugador++;
+                        nombreBot = obtenerNombreBot(); // cambia si gana
+                    } else {
+                        resultado = "¡Perdiste 😢!";
+                        puntosBot++;
+                        // mantiene el nombre
+                    }
+                    resultadoTexto.textContent = resultado;
+                    document.getElementById("puntosJugador").textContent = puntosJugador;
+                    document.getElementById("puntosBot").textContent = puntosBot;
+                    actualizarNombres();
+                }
+            }, 700);
+        }
+            function ajustarAlturaIframe() {
+                const altura = document.body.scrollHeight;
+                window.parent.postMessage({ tipo: "ajustarAltura", altura: altura }, "*");
+            }
+
+            // Ajustar altura inicial al cargar
+            window.addEventListener("load", ajustarAlturaIframe);
+
+            // Ajustar altura cuando el DOM cambie (por ejemplo, cambios dinámicos del juego)
+            const observer = new MutationObserver(ajustarAlturaIframe);
+            observer.observe(document.body, { childList: true, subtree: true, attributes: true });
+
+            // Opcional: reenviar altura cada cierto tiempo como respaldo
+            setInterval(ajustarAlturaIframe, 1000);
+    </script>
+</body>
+
+</html>

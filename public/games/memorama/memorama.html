@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Memorama</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="icon" href="imggames-modified.png" type="image/png">
+    <style>
+        /* Estilos generales */
+        body {
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #1a1a2e; /* Ejemplo: azul oscuro */
+    color: #fff;
+    text-align: center;
+    padding: 40px;
+}
+
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        #tablero {
+            display: grid;
+            grid-template-columns: repeat(6, 80px);
+            gap: 15px;
+            max-width: 800px;
+            margin: 30px auto;
+        }
+
+        .carta {
+            perspective: 1000px;
+            width: 80px;
+            height: 80px;
+        }
+
+        .contenido-carta {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s;
+            cursor: pointer;
+        }
+
+        .carta.abierta .contenido-carta,
+        .carta.bloqueada .contenido-carta {
+            transform: rotateY(180deg);
+            cursor: default;
+        }
+
+        .cara {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 32px;
+            backface-visibility: hidden;
+        }
+
+        .frontal {
+    background: url('./windowIcon.png') no-repeat center center;
+    background-size: cover;
+    backface-visibility: hidden;
+    border-radius: 10px;
+}
+
+
+.trasera {
+    background: #fff;
+    color: #000;
+    transform: rotateY(180deg);
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 32px;
+}
+        #intentos,
+        #tiempo,
+        #record {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+
+        #reiniciarBtn {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #fff;
+            color: #4e54c8;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        #reiniciarBtn:hover {
+            background-color: #e0e0e0;
+        }
+
+        @media (max-width: 500px) {
+            .carta {
+                width: 70px;
+                height: 70px;
+            }
+        }
+        .back-button {
+    display: block;
+    width: fit-content;
+    margin: 40px auto 0;
+    padding: 12px 24px;
+    font-size: 1em;
+    font-weight: 600;
+    color: var(--button-text);
+    background: linear-gradient(135deg, #4a90e2, #3a78c2);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    text-transform: uppercase;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.back-button:hover {
+    background: linear-gradient(135deg, #3a78c2, #4a90e2);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+    transform: translateY(-2px);
+}
+
+.back-button:active {
+    background: var(--button-active);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    transform: translateY(2px);
+}
+
+@media (max-width: 600px) {
+    .container {
+        padding: 25px;
+    }
+
+    h1 {
+        font-size: 2em;
+    }
+
+    p {
+        font-size: 1em;
+    }
+}
+    </style>
+</head>
+
+<body>
+
+    <h1>🧠 Memorama Mejorado</h1>
+
+    <div id="tablero"></div>
+
+    <p id="intentos">Intentos: 0</p>
+    <p id="tiempo">Tiempo: 00:00</p>
+    <p id="record">Récord: 00:00</p>
+    <button id="reiniciarBtn" onclick="reiniciarJuego()">🔄 Reiniciar</button>
+    <button class="back-button" onclick="history.back()">← Regresar</button>
+
+    <audio id="sonidoCoincidencia" src="https://www.soundjay.com/button/beep-07.wav" preload="auto"></audio>
+    <audio id="sonidoError" src="https://www.soundjay.com/button/beep-09.wav" preload="auto"></audio>
+
+    <script>
+        const iconos = [
+            "fa-star", "fa-heart", "fa-car", "fa-dog", "fa-moon", "fa-leaf",
+            "fa-gem", "fa-bolt", "fa-book", "fa-headphones", "fa-puzzle-piece", "fa-gamepad"
+        ];
+
+        let intentos = 0;
+        let tiempo = 0;
+        let cartasAbiertas = [];
+        let cartasBloqueadas = 0;
+        let temporizador;
+        let record = localStorage.getItem('record') || '00:00';
+        const tablero = document.getElementById("tablero");
+        const intentosTexto = document.getElementById("intentos");
+        const tiempoTexto = document.getElementById("tiempo");
+        const recordTexto = document.getElementById("record");
+        const sonidoCoincidencia = document.getElementById("sonidoCoincidencia");
+        const sonidoError = document.getElementById("sonidoError");
+
+        function mezclarArray(array) {
+            return array.concat(array).sort(() => 0.5 - Math.random());
+        }
+
+        function crearCarta(icono) {
+            const carta = document.createElement("div");
+            carta.classList.add("carta");
+            carta.dataset.icono = icono;
+
+            const contenido = document.createElement("div");
+            contenido.classList.add("contenido-carta");
+
+            const caraFrontal = document.createElement("div");
+            caraFrontal.classList.add("cara", "frontal");
+
+            const caraTrasera = document.createElement("div");
+            caraTrasera.classList.add("cara", "trasera");
+            caraTrasera.innerHTML = `<i class="fas ${icono}"></i>`;
+
+            contenido.appendChild(caraFrontal);
+            contenido.appendChild(caraTrasera);
+            carta.appendChild(contenido);
+
+            carta.addEventListener("click", () => manejarClic(carta));
+            return carta;
+        }
+
+        function manejarClic(carta) {
+                // Verifica si la carta ya está abierta o bloqueada, o si ya se han abierto 2 cartas
+                if (
+                    carta.classList.contains("abierta") ||
+                    carta.classList.contains("bloqueada") ||
+                    cartasAbiertas.length === 2
+                ) return;
+
+                // Abre la carta al hacer clic
+                carta.classList.add("abierta");
+                cartasAbiertas.push(carta);
+
+                // Si se han abierto 2 cartas, comparar las cartas
+                if (cartasAbiertas.length === 2) {
+                    intentos++;
+                    intentosTexto.textContent = `Intentos: ${intentos}`;
+
+                    const [c1, c2] = cartasAbiertas;
+
+                    // Si las cartas son iguales, bloquearlas
+                    if (c1.dataset.icono === c2.dataset.icono) {
+                        c1.classList.add("bloqueada");
+                        c2.classList.add("bloqueada");
+                        cartasBloqueadas += 2;
+                        sonidoCoincidencia.play();
+                        cartasAbiertas = [];
+
+                        // Verifica si el juego ha terminado
+                        if (cartasBloqueadas === iconos.length * 2) {
+                            clearInterval(temporizador);
+                            const tiempoFinal = tiempoTexto.textContent.split(' ')[1];
+
+                            // Al terminar el juego, mostrar mensaje y actualizar el récord si es necesario
+                            setTimeout(() => {
+                                alert(`¡Felicidades! Terminaste en ${tiempoFinal} con ${intentos} intentos.`);
+
+                                // Guardar récord si es mejor tiempo
+                                if (esMejorTiempo(tiempoFinal, record)) {
+                                    localStorage.setItem('record', tiempoFinal);
+                                    recordTexto.textContent = `Récord: ${tiempoFinal}`;
+                                }
+                            }, 500);
+                        }
+                    } else {
+                        // Si las cartas no son iguales, revertirlas después de 1 segundo
+                        sonidoError.play();
+                        setTimeout(() => {
+                            c1.classList.remove("abierta");
+                            c2.classList.remove("abierta");
+                            cartasAbiertas = [];
+                        }, 1000);
+                    }
+                }
+            }
+
+
+    function reiniciarJuego() {
+      tablero.innerHTML = "";
+      intentos = 0;
+      tiempo = 0;
+      cartasBloqueadas = 0;
+      cartasAbiertas = [];
+      intentosTexto.textContent = "Intentos: 0";
+      tiempoTexto.textContent = "Tiempo: 00:00";
+      recordTexto.textContent = `Récord: ${localStorage.getItem('record') || '00:00'}`;
+      clearInterval(temporizador);
+      iniciarTemporizador();
+
+      const iconosMezclados = mezclarArray(iconos);
+      iconosMezclados.forEach(icono => {
+        const carta = crearCarta(icono);
+        tablero.appendChild(carta);
+      });
+    }
+
+    function iniciarTemporizador() {
+      temporizador = setInterval(() => {
+        tiempo++;
+        const minutos = Math.floor(tiempo / 60).toString().padStart(2, '0');
+        const segundos = (tiempo % 60).toString().padStart(2, '0');
+        tiempoTexto.textContent = `Tiempo: ${minutos}:${segundos}`;
+      }, 1000);
+    }
+
+    function esMejorTiempo(nuevo, anterior) {
+      const [nMin, nSeg] = nuevo.split(':').map(Number);
+      const [aMin, aSeg] = anterior.split(':').map(Number);
+      const nuevoTotal = nMin * 60 + nSeg;
+      const anteriorTotal = aMin * 60 + aSeg;
+      return anterior === '00:00' || nuevoTotal < anteriorTotal;
+    }
+
+    // Inicialización al cargar
+    window.onload = () => {
+      recordTexto.textContent = `Récord: ${record}`;
+      reiniciarJuego();
+    };
+    function ajustarAlturaIframe() {
+            const altura = document.body.scrollHeight;
+            window.parent.postMessage({ tipo: "ajustarAltura", altura: altura }, "*");
+        }
+        // Ajustar altura inicial
+        window.addEventListener("load", ajustarAlturaIframe);
+        // Ajustar altura cuando el DOM cambie (por ejemplo, después de iniciar el juego)
+        const observer = new MutationObserver(ajustarAlturaIframe);
+        observer.observe(document.body, { childList: true, subtree: true, attributes: true });
+  </script>
+</body>
+</html>

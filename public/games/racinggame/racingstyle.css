@@ -1,0 +1,80 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    text-align: center;
+    font-family: Arial, sans-serif;
+    background: #67AE6E;
+}
+
+canvas {
+    background-color: #f4f4f4;
+        /* Color de fondo */
+        background-image: url('https://img.freepik.com/vector-gratis/escena-hermoso-paisaje-urbano-edificio-alto-tienda-calle-parque_1150-48985.jpg?semt=ais_hybrid&w=740');
+        /* Ruta de tu imagen */
+        background-repeat: no-repeat;
+        /* Para que no se repita */
+        background-size: cover;
+        /* Cubre todo el fondo */
+        background-position: center;
+        /* Centrada */
+    display: block;
+    margin: auto;
+    border: 2px solid black;
+}
+
+.controls {
+    margin-top: 10px;
+}
+
+button {
+    font-size: 20px;
+    padding: 10px;
+    margin: 5px;
+}
+.back-button {
+    display: block;
+    width: fit-content;
+    margin: 40px auto 0;
+    padding: 12px 24px;
+    font-size: 1em;
+    font-weight: 600;
+    color: var(--button-text);
+    background: linear-gradient(135deg, #4a90e2, #3a78c2);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    text-transform: uppercase;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.back-button:hover {
+    background: linear-gradient(135deg, #3a78c2, #4a90e2);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+    transform: translateY(-2px);
+}
+
+.back-button:active {
+    background: var(--button-active);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    transform: translateY(2px);
+}
+
+@media (max-width: 600px) {
+    .container {
+        padding: 25px;
+    }
+
+    h1 {
+        font-size: 2em;
+    }
+
+    p {
+        font-size: 1em;
+    }
+}

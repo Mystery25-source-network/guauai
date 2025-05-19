@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de QR Automático</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            color: #333;
+            margin-top: 30px;
+        }
+
+        p {
+            color: #555;
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+
+        input {
+            width: 80%;
+            padding: 12px;
+            font-size: 16px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-sizing: border-box;
+        }
+
+        button {
+            padding: 12px 25px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        #qr-container {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 25px;
+            border-radius: 15px;
+            position: relative;
+            background-color: #fff;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        #qr-img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+            border-radius: 10px;
+        }
+
+        #downloadBtn {
+            margin-top: 20px;
+            display: none;
+            padding: 12px 25px;
+            background-color: #007BFF;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease;
+        }
+
+        #downloadBtn:hover {
+            background-color: #0056b3;
+        }
+
+        #responseMessage {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #333;
+        }
+
+        /* Animación de colores para el marco */
+        @keyframes colorChange {
+            0% {
+                border-color: #f44336;
+            }
+
+            25% {
+                border-color: #ff9800;
+            }
+
+            50% {
+                border-color: #4caf50;
+            }
+
+            75% {
+                border-color: #2196f3;
+            }
+
+            100% {
+                border-color: #9c27b0;
+            }
+        }
+
+        .animated-border {
+            animation: colorChange 5s infinite;
+            border-width: 5px;
+            border-style: solid;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Generador Automático de QR</h1>
+    <p>Escribe tu solicitud y el bot generará un código QR para la URL o dominio mencionado.</p>
+
+    <!-- Input donde se ingresa el mensaje -->
+    <input type="text" id="userInput" placeholder="Escribe tu solicitud aquí..." />
+    <button id="generateQRBtn">Generar Código QR</button>
+
+    <div id="qr-container">
+        <img src="" id="qr-img" alt="QR code">
+    </div>
+
+    <a href="" id="downloadBtn" download="QR_Code.png">Descargar QR</a>
+
+    <div id="responseMessage"></div>
+
+    <script>
+        // Función para generar colores aleatorios
+        function randomColor() {
+            const letters = '0123456789ABCDEF';
+            let color = '#';
+            for (let i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color;
+        }
+
+        // Función para extraer una URL o dominio del mensaje
+        function extractUrl(text) {
+            const urlPattern = /https?:\/\/[a-zA-Z0-9.-]+\.[a-zA-Z]{2,3}(\/\S*)?|\b[a-zA-Z0-9.-]+\.[a-zA-Z]{2,3}\b/g;
+            const result = text.match(urlPattern);
+            return result ? result[0] : null;
+        }
+
+        // Función para generar el código QR
+        function generateQRCode(inputValue, color) {
+            const qrImg = document.createElement("img");
+            qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${inputValue}&color=${color.substring(1)}&bgcolor=FFFFFF`;
+            qrImg.alt = `QR code for ${inputValue}`;
+            return qrImg;
+        }
+
+        // Función principal para procesar el mensaje y generar el código QR
+        function processMessage(message) {
+            const keywords = ["genera", "construye", "dame", "muéstrame"];
+            const qrKeyword = "qr";
+
+            const lowerCaseMessage = message.toLowerCase();
+            const containsKeyword = keywords.some(keyword => lowerCaseMessage.includes(keyword));
+            const containsQrKeyword = lowerCaseMessage.includes(qrKeyword);
+
+            if (containsKeyword && containsQrKeyword) {
+                const url = extractUrl(message);
+                if (url) {
+                    const formattedUrl = url.startsWith('http') ? url : `https://${url}`;
+
+                    // Generar un color aleatorio para el QR
+                    const color = randomColor();
+
+                    // Generar el código QR
+                    const qrImg = generateQRCode(formattedUrl, color);
+                    document.getElementById("qr-img").src = qrImg.src;
+                    document.getElementById("qr-img").style.display = "block";
+                    document.getElementById("qr-container").classList.add("animated-border");
+
+                    // Establecer el enlace de descarga
+                    document.getElementById("downloadBtn").href = qrImg.src;
+                    document.getElementById("downloadBtn").style.display = "inline-block";
+
+                    // Mensaje de respuesta
+                    document.getElementById("responseMessage").innerHTML = `
+                        <p>¡Claro! Aquí tienes el código QR para la URL o dominio que solicitaste:</p>
+                        <p>¿Necesitas algo más?</p>
+                    `;
+                } else {
+                    alert("No pude encontrar una URL o dominio válido en tu mensaje.");
+                }
+            } else {
+                alert("No encontré una solicitud válida para generar un código QR.");
+            }
+        }
+
+        // Evento que maneja el botón de generar el QR
+        document.getElementById("generateQRBtn").addEventListener("click", function () {
+            const userMessage = document.getElementById("userInput").value;
+            if (userMessage) {
+                processMessage(userMessage);
+            } else {
+                alert("Por favor ingresa una solicitud.");
+            }
+        });
+    </script>
+</body>
+
+</html>

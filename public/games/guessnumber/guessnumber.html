@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Juego de Adivinar el Número</title>
+    <link rel="icon" href="imggames-modified.png" type="image/png">
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #1e1e2f;
+            color: #fff;
+            text-align: center;
+            padding: 30px;
+        }
+
+        h1 {
+            color: #ffca3a;
+        }
+
+        .cards {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+
+        .card {
+            width: 80px;
+            height: 110px;
+            background: linear-gradient(145deg, #3a3a5f, #2a2a45);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+            color: white;
+            font-size: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border-radius: 12px;
+            transition: transform 0.3s ease, background-color 0.3s;
+        }
+
+        .card:hover {
+            transform: scale(1.1);
+            background-color: #ffca3a;
+            color: #000;
+        }
+
+        .selected {
+            background-color: #2ec4b6 !important;
+            color: #fff;
+            border: 2px solid #fff;
+        }
+
+        .result {
+            margin-top: 20px;
+            font-size: 24px;
+        }
+
+        .points {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+
+        .loading {
+            font-size: 20px;
+            margin-top: 10px;
+        }
+
+        .counter {
+            font-size: 32px;
+            color: #ffca3a;
+            animation: fade 1s linear;
+        }
+
+        @keyframes fade {
+            from {
+                opacity: 1;
+            }
+
+            to {
+                opacity: 0;
+            }
+        }
+
+        .progress-container {
+            width: 300px;
+            height: 20px;
+            background-color: #ccc;
+            margin: 20px auto;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background-color: #ef233c;
+            width: 100%;
+            transition: width 1s linear;
+        }
+
+        .card-display {
+            margin-top: 20px;
+            font-size: 20px;
+            color: #ddd;
+        }
+
+        .kumpel-card {
+            margin-top: 20px;
+            font-size: 24px;
+            color: #95d5b2;
+        }
+        .back-button {
+    display: block;
+    width: fit-content;
+    margin: 40px auto 0;
+    padding: 12px 24px;
+    font-size: 1em;
+    font-weight: 600;
+    color: var(--button-text);
+    background: linear-gradient(135deg, #4a90e2, #3a78c2);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    text-transform: uppercase;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.back-button:hover {
+    background: linear-gradient(135deg, #3a78c2, #4a90e2);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+    transform: translateY(-2px);
+}
+
+.back-button:active {
+    background: var(--button-active);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    transform: translateY(2px);
+}
+
+@media (max-width: 600px) {
+    .container {
+        padding: 25px;
+    }
+
+    h1 {
+        font-size: 2em;
+    }
+
+    p {
+        font-size: 1em;
+    }
+}
+    </style>
+</head>
+
+<body>
+
+    <h1>🎮 Adivina el Número Correcto</h1>
+    <div class="cards" id="cards"></div>
+    <div class="loading" id="loading" style="display: none;">
+        Revelando resultado en... <span class="counter" id="countdown">3</span>
+    </div>
+    <div class="kumpel-card" id="kumpelCard"></div>
+    <div class="result" id="result"></div>
+    <div class="card-display" id="cardDetails"></div>
+    <div class="points" id="points">Jugador: 0 | Kumpel: 0</div>
+    <div class="progress-container" id="progressContainer" style="display:none;">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+    <button class="back-button" onclick="history.back()">← Regresar</button>
+
+    <script>
+        const cardsContainer = document.getElementById("cards");
+        const loading = document.getElementById("loading");
+        const countdown = document.getElementById("countdown");
+        const result = document.getElementById("result");
+        const pointsDisplay = document.getElementById("points");
+        const progressContainer = document.getElementById("progressContainer");
+        const progressBar = document.getElementById("progressBar");
+        const cardDetails = document.getElementById("cardDetails");
+        const kumpelCard = document.getElementById("kumpelCard");
+
+        let selectedCard = null;
+        let playerPoints = 0;
+        let kumpelPoints = 0;
+        let timeout, progressTimeout;
+        let correctNumber = 0;
+        let kumpelNumber = 0;
+
+        const getRandomUniqueNumbers = (count, max) => {
+            const nums = new Set();
+            while (nums.size < count) {
+                nums.add(Math.floor(Math.random() * (max + 1)));
+            }
+            return Array.from(nums);
+        };
+
+        const startGame = () => {
+            selectedCard = null;
+            correctNumber = Math.floor(Math.random() * 100);
+            kumpelNumber = Math.floor(Math.random() * 100);
+            result.textContent = "";
+            cardDetails.textContent = "";
+            kumpelCard.textContent = "";
+            cardsContainer.innerHTML = "";
+            progressContainer.style.display = "none";
+            loading.style.display = "none";
+
+            const numbers = getRandomUniqueNumbers(4, 99);
+            const randomIndex = Math.floor(Math.random() * 5);
+            numbers.splice(randomIndex, 0, correctNumber);
+
+            numbers.forEach(num => {
+                const card = document.createElement("div");
+                card.className = "card";
+                card.textContent = num;
+                card.addEventListener("click", () => selectCard(card, num));
+                cardsContainer.appendChild(card);
+            });
+
+            timeout = setTimeout(startProgressBar, 8000);
+        };
+
+        const selectCard = (cardElement, value) => {
+            if (selectedCard !== null) return;
+            clearTimeout(timeout);
+            selectedCard = value;
+
+            document.querySelectorAll(".card").forEach(card => card.classList.remove("selected"));
+            cardElement.classList.add("selected");
+
+            showCountdown(() => {
+                revealResults();
+            });
+        };
+
+        const showCountdown = (callback) => {
+            let count = 3;
+            loading.style.display = "block";
+            countdown.textContent = count;
+            const interval = setInterval(() => {
+                count--;
+                countdown.textContent = count;
+                if (count <= 0) {
+                    clearInterval(interval);
+                    loading.style.display = "none";
+                    callback();
+                }
+            }, 1000);
+        };
+
+        const revealResults = () => {
+            kumpelCard.textContent = `🤖 Kumpel eligió: ${kumpelNumber}`;
+            cardDetails.textContent = `🎯 Número correcto: ${correctNumber}`;
+
+            if (selectedCard === null) {
+                result.textContent = "⏱ Tiempo agotado. Pierdes un punto.";
+                playerPoints = Math.max(0, playerPoints - 1);
+            } else {
+                const playerDiff = Math.abs(selectedCard - correctNumber);
+                const kumpelDiff = Math.abs(kumpelNumber - correctNumber);
+
+                if (playerDiff < kumpelDiff) {
+                    result.textContent = "🎉 ¡Ganaste esta ronda!";
+                    playerPoints++;
+                } else if (playerDiff > kumpelDiff) {
+                    result.textContent = "🤖 Kumpel gana esta ronda.";
+                    kumpelPoints++;
+                } else {
+                    result.textContent = "🤝 ¡Empate!";
+                }
+            }
+
+            updatePoints();
+            setTimeout(startGame, 3000);
+        };
+
+        const startProgressBar = () => {
+            let timeLeft = 5;
+            progressContainer.style.display = "block";
+            progressBar.style.width = "100%";
+
+            progressTimeout = setInterval(() => {
+                timeLeft--;
+                progressBar.style.width = (timeLeft * 20) + "%";
+
+                if (timeLeft <= 0) {
+                    clearInterval(progressTimeout);
+                    revealResults(); // sin selección = null
+                }
+            }, 1000);
+        };
+
+        const updatePoints = () => {
+            pointsDisplay.textContent = `Jugador: ${playerPoints} | Kumpel: ${kumpelPoints}`;
+        };
+
+        startGame();
+        // Estado de pausa
+            let isPaused = false;
+            let pauseOverlay = document.createElement("div");
+
+            // Configurar overlay de pausa visual
+            pauseOverlay.style.position = "fixed";
+            pauseOverlay.style.top = "0";
+            pauseOverlay.style.left = "0";
+            pauseOverlay.style.width = "100%";
+            pauseOverlay.style.height = "100%";
+            pauseOverlay.style.backgroundColor = "rgba(0,0,0,0.7)";
+            pauseOverlay.style.color = "#fff";
+            pauseOverlay.style.display = "flex";
+            pauseOverlay.style.justifyContent = "center";
+            pauseOverlay.style.alignItems = "center";
+            pauseOverlay.style.fontSize = "36px";
+            pauseOverlay.style.zIndex = "999";
+            pauseOverlay.textContent = "⏸ Juego pausado";
+            pauseOverlay.style.display = "none";
+            document.body.appendChild(pauseOverlay);
+
+            // Teclado: Espacio o Enter para pausar
+            document.addEventListener("keydown", (e) => {
+                if (e.code === "Space" || e.code === "Enter") {
+                    togglePause();
+                }
+            });
+
+            function togglePause() {
+                isPaused = !isPaused;
+
+                if (isPaused) {
+                    clearTimeout(timeout);
+                    clearInterval(progressTimeout);
+                    pauseOverlay.style.display = "flex";
+                } else {
+                    pauseOverlay.style.display = "none";
+
+                    // Reiniciar temporizador si aún no se ha hecho selección
+                    if (selectedCard === null) {
+                        timeout = setTimeout(startProgressBar, 8000);
+                    }
+                }
+            }
+
+    </script>
+
+</body>
+
+</html>

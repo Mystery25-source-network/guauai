@@ -1,0 +1,483 @@
+/* --- IMPORTAR FUENTES --- */
+/* Importar la fuente Pacifico desde Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap');
+
+/* --- RESET DE MÁRGENES Y PADDINGS --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+.main-container {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    margin-left: 260px;
+    padding-top: 60px;
+    height: 100vh;
+}
+
+/* --- ESTILO GENERAL DEL BODY Y ESTRUCTURA --- */
+/* Fondo de la página y estilo básico */
+body {
+    font-family: 'Open Sans', sans-serif;
+    background-color: #1b262c;
+    color: #bbe1fa;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* --- HEADER Y ANIMACIONES DEL ENCABEZADO --- */
+/* Estilo del header con animación de deslizamiento */
+/* Header */
+.app-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 10;
+    background-color: #393E46;
+    color: #bbe1fa;
+    text-align: center;
+    padding: 14px;
+    font-size: 22px;
+    font-weight: bold;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    font-family: 'Pacifico', cursive;
+    animation: pulseText 5s infinite ease-in-out;
+}
+@keyframes slideDown {
+    from {
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* --- ANIMACIONES DE TEXTO --- */
+/* Animación de expansión y contracción del texto en el header */
+@keyframes pulseText {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.07);
+    }
+}
+.avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: #bbe1fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #1b262c;
+    font-weight: bold;
+    font-size: 18px;
+    flex-shrink: 0;
+}
+
+/* --- ANIMACIÓN DE BIENVENIDA --- */
+/* Animación de fade-in para el texto de bienvenida */
+.welcome-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 24px;
+    font-family: 'Pacifico', cursive;
+    color: #bbe1fa;
+    animation: welcomeFadeIn 3s ease-out forwards;
+    text-align: center;
+}
+
+@keyframes welcomeFadeIn {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.5);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
+
+/* --- CONTENEDORES Y MENSAGES DEL CHAT --- */
+/* Contenedor de mensajes */
+.chat-log {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    background-color: #1b262c;
+}
+
+/* Contenedor de cada mensaje */
+.message-wrapper {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    padding: 0 10px;
+}
+
+.message-wrapper.bot {
+    justify-content: flex-start;
+}
+
+.message-wrapper.user {
+    justify-content: flex-end;
+}
+
+/* Estilo de los mensajes */
+.message {
+    max-width: 70%;
+    padding: 14px 18px;
+    border-radius: 18px;
+    font-size: 17px;
+    box-shadow: 2px 4px 6px rgba(0, 0, 0, 0.3);
+    word-wrap: break-word;
+    line-height: 1.5;
+    transition: transform 0.2s;
+    opacity: 0;
+    animation: fadeIn 0.3s ease forwards;
+}
+
+.message:hover {
+    transform: scale(1.02);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.message.user {
+    background: linear-gradient(135deg, #bbe1fa, #a3d0f3);
+    color: #1b262c;
+    align-self: flex-end;
+}
+
+.message.assistant {
+    background: linear-gradient(135deg, #3282b8, #276a95);
+    color: #ffffff;
+    align-self: flex-start;
+}
+
+/* --- BOTONES Y ENTRADA --- */
+/* Contenedor de la entrada del usuario y el botón de enviar */
+
+
+/* Campo de entrada de texto */
+#user-input {
+    flex: 1;
+    padding: 14px 20px;
+    border-radius: 20px;
+    border: none;
+    font-size: 17px;
+    background-color: #e3f2fd;
+    color: #1b262c;
+    outline: none;
+    transition: box-shadow 0.3s ease, background-color 0.3s;
+}
+
+#user-input:focus {
+    box-shadow: 0 0 12px rgba(50, 130, 184, 0.5);
+    background-color: #ffffff;
+}
+
+#user-input::placeholder {
+    color: #276a95;
+    font-size: 15px;
+    font-style: italic;
+    opacity: 0.8;
+}
+
+/* Botón de enviar */
+.send-button {
+    background-color: #3282b8;
+    border: none;
+    padding: 12px 16px;
+    border-radius: 50%;
+    cursor: pointer;
+    color: white;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.send-button:hover {
+    background-color: #0f4c75;
+    transform: scale(1.1);
+}
+
+.send-button:active {
+    transform: scale(0.95);
+}
+
+/* Icono SVG dentro del botón */
+.send-button svg {
+    width: 24px;
+    height: 24px;
+    fill: white;
+    pointer-events: none; /*Para evitar que el clic sea interceptado por la imagen */
+    margin-left: 8px; /* Espaciado si es necesario*/
+    background:transparent; /* Asegura que la imagen no tenga fondo*/
+    padding:0;
+    cursor:pointer;
+}
+
+/* --- ICONOS Y BOTÓN DE ALTAVOZ --- */
+/* Contenedor del botón de altavoz */
+.speak-btn {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.speak-btn img {
+    width: 20px;
+    height: 20px;
+}
+
+/* --- MEDIDAS RESPONSIVAS --- */
+
+/* Animación al aparecer */
+@keyframes fadeSlideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+/*input container*/
+.input-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    background-color: #1b262c;
+    border-top: 2px solid #3282b8;
+}
+/* drawer */
+/* Responsive */
+@media (max-width: 600px) {
+    .drawer-container {
+        display: none;
+    }
+
+    .main-container {
+        margin-left: 0;
+    }
+
+    .input-container {
+        flex-direction: column;
+    }
+
+    #user-input,
+    button {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+}
+@media (max-width: 600px) {
+    .input-container {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    #user-input {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
+    .send-button {
+        align-self: flex-end;
+    }
+}
+/* Submenú debajo de Games */
+.drawer-submenu {
+    margin-left: 26px;
+    /* 6px más que el padding del drawer-link */
+    margin-top: -20px;
+    list-style: disc;
+    color: #bbe1fa;
+    font-size: 16px;
+    animation: fadeSlideIn 0.8s ease-in-out;
+}
+
+.drawer-submenu li {
+    margin-bottom: 8px;
+    transition: transform 0.3s ease, color 0.3s ease;
+    cursor: pointer;
+}
+
+.drawer-submenu li:hover {
+    transform: translateX(6px);
+    color: #ffffff;
+}
+
+/* Animación al aparecer */
+@keyframes fadeSlideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.drawer-submenu li a {
+    color: inherit;
+    text-decoration: none;
+    display: block;
+    padding: 4px 0;
+    transition: color 0.3s, transform 0.3s;
+}
+
+.drawer-submenu li a:hover {
+    color: #ffffff;
+    transform: translateX(6px);
+}
+/* Drawer */
+.drawer-container {
+    width: 260px;
+    background-color: #202020;
+    padding-top: 60px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 9;
+}
+.drawer {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    width: 100%;
+    padding: 20px;
+}
+
+.drawer-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #bbe1fa;
+    text-decoration: none;
+    font-size: 18px;
+    transition: background 0.3s, color 0.3s;
+    padding: 10px;
+    border-radius: 8px;
+}
+
+.drawer-link i {
+    font-size: 20px;
+}
+
+.drawer-link:hover {
+    background-color: #3282b8;
+    color: white;
+}
+
+.drawer h1 {
+    font-family: 'Pacifico', cursive;
+    animation: pulseText 5s infinite ease-in-out;
+}
+.message-wrapper.bot button {
+    width: 24px;
+    height: 24px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    color: #bbe1fa;
+    /* cambia el color aquí */
+    transition: color 0.3s ease;
+}
+
+.message-wrapper.bot button:hover {
+    color: #3282b8;
+    /* o cualquier color para hover */
+}
+#welcome-message {
+    background-color: #1b262c;
+    position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 9999;
+        text-align: center;
+        padding: 20px;
+        font-size: 40px;
+        font-family: 'Pacifico', cursive;
+        /* gris claro */
+        border-radius: 10px;
+        animation: pulseText 5s infinite ease-in-out;
+    /* gris claro */
+}
+
+.message-wrapper {
+    border: 2px dashed #1b262c;
+}
+
+.welcome {
+    box-shadow: 0 0 10px #1b262c;;
+}
+
+.message {
+    background-color: #88ff00;
+    /* azul claro */
+}
+
+.app {
+    border: 2px solid #b41b1b(244, 244, 248);
+}
+
+@keyframes gradientAnimation {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}

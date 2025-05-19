@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ruta desde mi ubicación</title>
+    <link rel="icon" href="image-modified.png" type="image/png">
+
+    <!-- Estilos -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-geosearch/dist/geosearch.css" />
+    <link rel="stylesheet" href="https://unpkg.com/materialize-css@1.0.0/dist/css/materialize.min.css" />
+
+    <style>
+        html,
+        body {
+            margin: 0;
+            height: 100%;
+        }
+
+        #map {
+            height: 100vh;
+            width: 100%;
+        }
+
+        .sidenav {
+            z-index: 999;
+            padding: 10px;
+        }
+
+        .sidenav input {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Barra lateral con datos de ruta -->
+    <ul id="slide-out" class="sidenav">
+        <li>
+            <h5>Ruta actual</h5>
+        </li>
+        <li>
+            <label for="start">Inicio:</label>
+            <input id="start" type="text" readonly />
+        </li>
+        <li>
+            <label for="end">Destino:</label>
+            <input id="end" type="text" readonly />
+        </li>
+        <li><a href="#!" id="btn-fullscreen">Pantalla Completa</a></li>
+    </ul>
+
+    <div id="map" aria-label="Mapa interactivo centrado en Colombia"></div>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
+    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+    <script src="https://unpkg.com/leaflet-geosearch/dist/geosearch.umd.js"></script>
+    <script src="https://unpkg.com/materialize-css@1.0.0/dist/js/materialize.min.js"></script>
+
+    <script>
+        let map;
+        let userLocation = null;
+        let routingControl = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Inicializar Materialize
+            const elems = document.querySelectorAll('.sidenav');
+            M.Sidenav.init(elems);
+
+            // Crear mapa
+            map = L.map('map').setView([4.710989, -74.072090], 13); // Bogotá
+
+            // Capa base
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; OpenStreetMap contributors'
+            }).addTo(map);
+
+            // Obtener ubicación del usuario
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const { latitude, longitude } = position.coords;
+                    userLocation = [latitude, longitude];
+
+                    // Mostrar marcador
+                    const marker = L.marker(userLocation).addTo(map).bindPopup("Estás aquí").openPopup();
+                    map.setView(userLocation, 14);
+
+                    // Actualizar barra lateral
+                    document.getElementById('start').value = `${latitude.toFixed(5)}, ${longitude.toFixed(5)}`;
+                },
+                (err) => {
+                    alert("No se pudo obtener tu ubicación. Se usará Bogotá como origen.");
+                    userLocation = [4.710989, -74.072090];
+                    document.getElementById('start').value = "Bogotá (por defecto)";
+                }
+            );
+
+            // Proveedor de búsqueda personalizado
+            // Proveedor de búsqueda personalizado con múltiples países
+            class CustomNominatimProvider {
+                search({ query }) {
+                    const params = new URLSearchParams({
+                        q: query,
+                        format: 'json',
+                        addressdetails: 1,
+                        countrycodes: 'co,us,mx,ar,cl,es,pe,br,fr,it,de,gb,ca,au,in,za,ru,cn,jp,kr,ng,sa,eg,pk,kr,id,th,sg,ph,ke,ng,il,ua,ro,ng,gh,tr,cz,be,pl,sk,lt,lv,ee,at,lu,hu,gr,cy,hr,si,rs,md,by,kz,uz,kg,tj,az,am,ge,md,lt,ua,ee,mt,fi,lu,mc,il,pt,ba,hr,ee,ro,ba,rs,sk,cz,pl,lt,lu,cz,rs,by,md,bh,ae,kw,qa,om,jo,lb,sy,iq,ye,ae,bd,my,kh,la,mm,vn,tw,kh,lz,mo,hk,tv,ws,ck,to,nu,fj,pn,ck,ki,cc,ph,bz,sv,ht,do,hn,ni,cr,pa,gt,bs,bb,tc,ai,dm,bm,ky,vg,gu,mp,sj,vi,gu,sx,bl,sh,pm,sc,sb,af,al,dz,ad,ao,ag,ar,au,at,bs,bd,bh,bi,by,bz,bj,bt,bo,bq,bw,br,bn,bt,bm,bs,bt,bu,ph,bf,bg,bh,ba,al',
+                        limit: 5
+                    });
+
+                    return fetch(`https://nominatim.openstreetmap.org/search?${params}`)
+                        .then(res => res.json())
+                        .then(results => results.map(r => ({
+                            x: parseFloat(r.lon),
+                            y: parseFloat(r.lat),
+                            label: r.display_name
+                        })));
+                }
+            }
+
+            // Control de búsqueda
+            const searchControl = new window.GeoSearch.GeoSearchControl({
+                provider: new CustomNominatimProvider(),
+                autoComplete: true,
+                autoCompleteDelay: 250,
+                style: 'bar',
+                showPopup: true,
+                retainZoomLevel: false,
+                animateZoom: true,
+                searchLabel: 'Buscar destino...'
+            });
+
+            map.addControl(searchControl);
+
+            // Evento de búsqueda seleccionada
+            map.on('geosearch/showlocation', (result) => {
+                const destCoords = [result.location.y, result.location.x];
+
+                // Actualizar barra lateral
+                document.getElementById('end').value = result.location.label;
+
+                // Dibujar ruta
+                if (routingControl) {
+                    map.removeControl(routingControl);
+                }
+
+                routingControl = L.Routing.control({
+                    waypoints: [
+                        L.latLng(userLocation),
+                        L.latLng(destCoords)
+                    ],
+                    routeWhileDragging: false,
+                    geocoder: L.Control.Geocoder.nominatim(),
+                    createMarker: function (i, wp, n) {
+                        return L.marker(wp.latLng, {
+                            icon: L.icon({
+                                iconUrl: i === 0
+                                    ? 'https://cdn-icons-png.flaticon.com/512/25/25694.png'
+                                    : 'https://cdn-icons-png.flaticon.com/512/684/684908.png',
+                                iconSize: [30, 30],
+                                iconAnchor: [15, 30]
+                            })
+                        });
+                    }
+                }).addTo(map);
+            });
+
+            // Pantalla completa
+            document.getElementById('btn-fullscreen').addEventListener('click', () => {
+                const elem = map.getContainer();
+                if (elem.requestFullscreen) {
+                    elem.requestFullscreen();
+                } else if (elem.webkitRequestFullscreen) {
+                    elem.webkitRequestFullscreen();
+                } else if (elem.msRequestFullscreen) {
+                    elem.msRequestFullscreen();
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

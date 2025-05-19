@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LinkiusAI</title>
+    <link rel="stylesheet" href="stylepruba.css" />
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <link rel="icon" href="images/image-modified.png" type="image/png">
+    <script src="finisher-header.es5.min.js" type="text/javascript"></script>
+    <script src="./script.js"></script>
+</head>
+
+<body>
+    <div class="main-layout">
+        <div class="main-container">
+            <header class="app-header">LINKIUS AI</header>
+    
+            <!-- Mensaje inicial de bienvenida -->
+            <div id="welcome-message" class="message-wrapper welcome">
+                <div class="welcome app">
+                    Bienvenido, ¿en qué puedo ayudarte?
+                </div>
+            </div>
+    
+            <div class="chat-log" id="chat-log">
+                <!-- Aquí se agregarán dinámicamente los mensajes -->
+            </div>
+    
+            <div class="input-background">
+                <div class="input-container">
+                    <input type="text" id="user-input" placeholder="Escribe un mensaje..." />
+                    <button id="submit-btn" class="send-button">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    
+        <div class="drawer-container">
+            <div class="drawer">
+                <h1>Tools</h1>
+                <!-- Other drawer links here -->
+                <a class="drawer-link" onclick="loadGame('games/tictactoe.html')">
+                    <i class="fas fa-gamepad"></i>
+                    <span>Games</span>
+                </a>
+                <ul class="drawer-submenu">
+                    <li><a href="games/tictactoe/tictactoe.html"">Tic Tac Toe</a></li>
+                    <li><a href="games/memorama/memorama.html">Memorama</a></li>
+                    <li><a href="games/RockPaperScissors.html">Rock, Paper, Scissors</a></li>
+                    <li><a href="games/racinggame/racinggame.html"">Racing game</a></li>
+                   <!--<li><a href="games/snake/snakegame.html">Snake</a></li>-->
+                    <li><a href="games/guessnumber/guessnumber.html">Guess the Number</a></li>
+                </ul>
+                <a class="drawer-link" href="tools/lib/library.html">
+                    <i class="fas fa-book"></i>
+                    <span>Library</span>
+                </a>
+                <a class="drawer-link browser" href="tools/browser/browser.html">
+                    <i class="fas fa-search"></i>
+                    <span>Browser</span>
+                </a>
+                <a class="drawer-link browser" href="tools/routes/maps.html">
+                    <i class="fas fa-map"></i> <!--o "fas fa-globe" para un globo -->
+                    <span>Maps</span>
+                </a>
+                <a class="drawer-link legal" href="tools/legal/TyC/termsAndConditions.html">
+                    <i class="fas fa-balance-scale"></i>
+                    <span>Terms and Conditions</span>
+                </a>
+                <a class="drawer-link regarding" href="tools/legal/Regarding/regarding.html">
+                    <i class="fas fa-question-circle"></i>
+                    <span>Regarding Project</span>
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    
+    <script>
+                // Función para mostrar los mensajes
+                    function displayMessage(message, sender) {
+                        const chatLog = document.getElementById("chat-log");
+
+                        const messageWrapper = document.createElement("div");
+                        messageWrapper.classList.add("message-wrapper", sender);
+
+                        // Avatar solo para el bot
+                        if (sender === "assistant") {
+                            const avatar = document.createElement("img");
+                            avatar.src = "images/image-modified.png";
+                            avatar.alt = "Avatar del bot";
+                            avatar.style.width = "30px";
+                            avatar.style.height = "30px";
+                            avatar.style.borderRadius = "50%";
+                            avatar.style.marginRight = "8px";
+                            messageWrapper.appendChild(avatar);
+                        }
+
+                        const messageElement = document.createElement("div");
+                        messageElement.classList.add("message", sender);
+                        messageElement.innerText = message;
+
+                        // Botón altavoz
+                        const speakerButton = document.createElement("button");
+                        const speakerIcon = document.createElement("img");
+                        speakerIcon.src = "https://img.icons8.com/ios/452/speaker.png"; // URL de la imagen del altavoz
+                        speakerIcon.alt = "Reproducir mensaje";
+                        speakerIcon.style.width = "20px"; // Ajusta el tamaño de la imagen
+                        speakerIcon.style.height = "20px"; // Ajusta el tamaño de la imagen
+                        speakerButton.appendChild(speakerIcon);
+                        speakerButton.onclick = () => speakMessage(message);
+                        speakerButton.style.marginLeft = "8px"; // Espaciado si es necesario
+                        messageElement.appendChild(speakerButton);
+
+                        messageWrapper.appendChild(messageElement);
+                        chatLog.appendChild(messageWrapper);
+                        chatLog.scrollTop = chatLog.scrollHeight;
+                    }
+
+                    // Función para mostrar el mensaje del bot con un efecto de escritura progresiva
+                    function displayBotMessageProgresivamente(message) {
+                        const chatLog = document.getElementById("chat-log");
+
+                        const messageWrapper = document.createElement("div");
+                        messageWrapper.classList.add("message-wrapper", "assistant");
+
+                        // Avatar del bot
+                        const avatar = document.createElement("img");
+                        avatar.src = "images/image-modified.png";
+                        avatar.alt = "Avatar del bot";
+                        avatar.style.width = "30px";
+                        avatar.style.height = "30px";
+                        avatar.style.borderRadius = "50%";
+                        avatar.style.marginRight = "8px";
+                        messageWrapper.appendChild(avatar);
+
+                        const messageElement = document.createElement("div");
+                        messageElement.classList.add("message", "assistant");
+
+                        // Botón altavoz (se añade después del texto con delay)
+                        const speakerButton = document.createElement("button");
+                        const speakerIcon = document.createElement("img");
+                        speakerIcon.src = "images/speaker.png"; // URL de la imagen del altavoz
+                        speakerIcon.alt = "Reproducir mensaje";
+                        speakerIcon.style.width = "20px"; // Ajusta el tamaño de la imagen
+                        speakerIcon.style.height = "20px"; // Ajusta el tamaño de la imagen
+                        speakerButton.appendChild(speakerIcon);
+                        speakerButton.onclick = () => speakMessage(message);
+                        speakerButton.style.marginLeft = "8px"; // Espaciado si es necesario
+                        speakerIcon.style.background = "transparent"; // Asegura que la imagen no tenga fondo
+                        speakerIcon.style.pointerEvents = "none"; // Para evitar que el clic sea interceptado por la imagen
+                        speakerButton.style.padding = "0";
+                        speakerButton.style.marginLeft = "8px";
+                        speakerButton.style.cursor = "pointer";
+                        messageElement.appendChild(speakerButton);
+                        messageWrapper.appendChild(messageElement);
+                        chatLog.appendChild(messageWrapper);
+                        escribirMensajeProgresivo(message, messageElement, speakerButton);
+                    }
+
+                    // Función para escribir el mensaje de forma progresiva
+                    function escribirMensajeProgresivo(mensaje, elemento, speakerButton) {
+                        let index = 0;
+                        const intervalo = setInterval(() => {
+                            elemento.innerText = mensaje.slice(0, index);
+                            index++;
+                            if (index > mensaje.length) {
+                                clearInterval(intervalo);
+                                elemento.appendChild(speakerButton); // Agrega el botón al final del texto
+                            }
+                        }, 50);
+                    }
+                    // Lógica del botón de enviar
+                    document.getElementById("submit-btn").addEventListener("click", () => {
+                        const userInput = document.getElementById("user-input").value.trim();
+                        if (!userInput) return;  // No enviar si el input está vacío
+
+                        // Ocultar el mensaje de bienvenida si aún está visible
+                        const welcomeMessage = document.getElementById("welcome-message");
+                        if (welcomeMessage && welcomeMessage.style.display !== 'none') {
+                            welcomeMessage.style.transition = 'opacity 0.5s ease';
+                            welcomeMessage.style.opacity = '0';
+                            setTimeout(() => {
+                                welcomeMessage.style.display = 'none';
+                            }, 500);
+                        }
+
+                        // Mostrar mensaje del usuario
+                        displayMessage(userInput, 'user');
+                        document.getElementById("user-input").value = "";
+
+                        // Evaluamos la entrada del usuario
+                        let assistantResponse = "";
+                        let needsAPI = false;
+
+                        // Lista de respuestas amigables
+                        const saludos = [
+                            "¡Hola! ¿Cómo estás? 😊",
+                            "¡Qué tal! Estoy muy bien, gracias por preguntar. ¿Y tú?",
+                            "¡Hola! Todo bien por aquí, ¿y tú qué tal?",
+                            "¡Hey! Estoy muy bien, ¿cómo estás tú?",
+                            "¡Hola! ¿Todo en orden por tu lado?",
+                            "¡Hola! Qué gusto saludarte, ¿cómo va todo?",
+                            "¡Qué onda! Todo bien, ¿y tú?",
+                            "¡Hola! Estoy excelente, gracias. ¿Y tú?",
+                            "¡Hola! ¿Qué tal todo por ahí?",
+                            "¡Saludos! ¿Cómo te encuentras?",
+                            "¡Hola! Todo en paz, ¿y tú?",
+                            "¡Hey! Aquí todo bien, ¿cómo vas?",
+                            "¡Hola! ¿Cómo va todo? 😊",
+                            "¡Qué tal! Estoy genial, ¿y tú?",
+                            "¡Hola! Todo tranquilo, ¿y tú?"
+                        ];
+                        const respuestasSaludo = [
+                            "¡Hola! ¿Cómo te encuentras? 😊",
+                            "¡Qué tal! Estoy muy bien, gracias por preguntar. ¿Y tú?",
+                            "¡Hola! Todo bien por aquí, ¿y tú qué tal?",
+                            "¡Hey! Estoy muy bien, ¿cómo estás tú?",
+                            "¡Hola! ¿Todo en orden por tu lado?",
+                            "¡Hola! Qué gusto saludarte, ¿cómo va todo?",
+                            "¡Qué onda! Todo bien, ¿y tú?",
+                            "¡Hola! Estoy excelente, gracias. ¿Y tú?",
+                            "¡Hola! ¿Qué tal todo por ahí?",
+                            "¡Saludos! ¿Cómo te encuentras?",
+                            "¡Hola! Todo en paz, ¿y tú?",
+                            "¡Hey! Aquí todo bien, ¿cómo vas?",
+                            "¡Hola! ¿Cómo va todo? 😊",
+                            "¡Qué tal! Estoy genial, ¿y tú?",
+                            "¡Hola! Todo tranquilo, ¿y tú?"
+                        ];
+                        // Lista de respuestas sobre lo que puede hacer el asistente
+                        const respuestasHabilidades = [
+                            "Puedo ayudarte a responder preguntas, jugar juegos, generar imágenes y mucho más. ¿Qué te gustaría hacer?",
+                            "¡Puedo hacer muchas cosas! Desde responder preguntas hasta generar imágenes o ayudarte con tareas. ¿Qué necesitas?",
+                            "Soy capaz de responder preguntas, ayudarte a aprender cosas nuevas, e incluso generar imágenes. ¿En qué te gustaría que te ayudara?",
+                            "Puedo hacer muchas cosas, como responder a tus preguntas, jugar algunos juegos, o incluso crear imágenes. ¿En qué te gustaría que te asistiera?",
+                            "¡Tengo muchas habilidades! Responder preguntas, generar imágenes y hasta ayudarte con juegos. ¿Qué necesitas?",
+                            "Puedo ayudarte con preguntas, tareas, juegos y mucho más. ¿Qué te gustaría hacer hoy?",
+                            "Soy un asistente versátil: puedo responder preguntas, hacer juegos y hasta ayudarte con ideas creativas. ¿Cómo puedo asistirte?",
+                            "¡Puedo hacer todo lo que imagines! Desde responder preguntas hasta crear imágenes o juegos. ¿Qué te gustaría hacer?",
+                            "Tengo muchas funciones: responder preguntas, generar imágenes, ayudarte con juegos y más. ¿En qué puedo ayudarte ahora?",
+                            "Puedo hacer muchas cosas, como resolver dudas, jugar y hasta generar contenido visual. ¿Qué te gustaría probar?",
+                            "¡Puedo ayudarte con varias cosas! Desde responder preguntas hasta crear imágenes o incluso jugar. ¿Qué te interesa hoy?",
+                            "Puedo responder a tus preguntas, generar contenido visual, ayudarte con tareas y hasta jugar algunos juegos. ¿Qué prefieres hacer?",
+                            "¡Puedo hacer mucho! Desde resolver preguntas hasta crear imágenes y ayudarte con ideas creativas. ¿Qué te gustaría hacer?",
+                            "Puedo ayudarte en muchas áreas, como responder preguntas, crear imágenes, y más. ¿En qué te gustaría que te ayude?",
+                            "¡Puedo ayudarte con muchas cosas! Responder preguntas, generar imágenes, y mucho más. ¿Qué te gustaría explorar?",
+                            "Soy un asistente multifuncional. Responder preguntas, crear imágenes, jugar juegos y mucho más. ¿Qué te gustaría hacer hoy?"
+                        ];
+                        // Lista de respuestas sobre cómo fue creado el asistente
+                        const respuestasCreacion = [
+                            "Fui creado usando programación avanzada y grandes cantidades de datos. Mi propósito es interactuar y ayudar a las personas.",
+                            "Fui desarrollado por un equipo de ingenieros y expertos en inteligencia artificial, utilizando programación y análisis de datos.",
+                            "Fui creado por OpenAI, utilizando técnicas avanzadas de aprendizaje automático, que me permiten interactuar y aprender de las conversaciones.",
+                            "Soy el resultado de años de investigación en inteligencia artificial. Fui entrenado con grandes volúmenes de texto para entender y responder preguntas.",
+                            "Fui diseñado por ingenieros que me entrenaron usando datos y algoritmos de inteligencia artificial, lo que me permite comprender y responder a las preguntas de manera eficiente.",
+                            "Fui creado con la ayuda de programación avanzada y aprendizaje automático. Mi entrenamiento me permite aprender y adaptarme a las conversaciones con los usuarios.",
+                            "Mi creación se basa en la inteligencia artificial, utilizando algoritmos de aprendizaje profundo para entender y generar respuestas a preguntas.",
+                            "Fui creado con datos y programación avanzada, aprendiendo de patrones y conversaciones para poder interactuar de manera natural y útil.",
+                            "Me desarrollaron utilizando tecnología de inteligencia artificial y procesamiento de lenguaje natural, para que pueda responder preguntas y asistir de manera eficaz.",
+                            "Mi creación es el fruto de la programación avanzada y el análisis de grandes cantidades de texto, lo que me permite interactuar y ayudarte con diversos temas.",
+                            "Soy una inteligencia artificial creada por OpenAI, entrenada para entender el lenguaje humano y proporcionar respuestas útiles y coherentes.",
+                            "Fui creado por un equipo de desarrolladores que me entrenaron con millones de ejemplos de texto para poder comunicarme de manera efectiva.",
+                            "Mi base es un modelo de inteligencia artificial entrenado con grandes volúmenes de texto, lo que me permite aprender y mejorar constantemente.",
+                            "Fui creado a partir de tecnologías avanzadas de inteligencia artificial, donde los algoritmos de aprendizaje me ayudan a entender y generar respuestas.",
+                            "Me desarrollaron usando algoritmos de aprendizaje automático y procesamiento de lenguaje natural, lo que me permite responder a preguntas y tener conversaciones."
+                        ];
+                        const respuestascreador = [
+                            "Fui creado por Miguel Vila Riascos, un estudiante de ingeniería de sistemas con mucha curiosidad.",
+                            "Mi creador es Miguel Jose Vila Riascos, un apasionado de la tecnología y la inteligencia artificial.",
+                            "Fui desarrollado por Vila Miguel como parte de su proyecto de programación.",
+                            "Miguel Vila, un estudiante de ingeniería, me diseñó para ayudarte en lo que necesites.",
+                            "Mi existencia se la debo a Miguel Vila Riascos, quien me programó con dedicación y creatividad.",
+                            "Fui construido por Miguel José Vila Riascos, un joven desarrollador interesado en la asistencia virtual.",
+                            "Miguel Vila Riascos es quien escribió todas mis líneas de código. ¡Todo gracias a él!",
+                            "Mi creador es Miguel Vila, un entusiasta de la informática que quiso darme vida.",
+                            "Fui diseñado y programado por Vila Riascos Miguel José, un estudiante con visión e iniciativa.",
+                            "Vila Riascos Miguel  me desarrolló como parte de su aprendizaje en ingeniería de sistemas.",
+                            "Me programó con dedicación para ayudarte en todo lo que necesites. ¡Aquí estoy!"
+                        ];
+                        const quiensoy = [
+                            "Soy Linkius AI, un modelo de procesamiento de lenguaje natural desarrollado con fines educativos por Miguel Vila.",
+                            "Me llamo Linkius AI, una inteligencia artificial experimental creada por Vila Miguel para ayudarte en lo que necesites.",
+                            "Soy un asistente virtual llamado Linkius AI, diseñado como parte de un proyecto académico en ingeniería de sistemas.",
+                            "Linkius AI es mi nombre. Soy una IA conversacional construida con tecnología NLP para explorar el aprendizaje automático.",
+                            "Soy Linkius AI, un sistema inteligente enfocado en la comprensión del lenguaje humano, desarrollado por Vila Riascos Miguel .",
+                            "Soy un modelo NLP experimental conocido como Linkius AI, creado con el objetivo de aprender y ayudar.",
+                            "Puedes llamarme Linkius AI. Fui diseñado por Miguel Jose Vila Riascos como parte de un proyecto educativo de inteligencia artificial.",
+                            "Soy una IA conversacional experimental llamada Linkius AI. Mi propósito es aprender, conversar y ayudarte.",
+                            "Linkius AI, a tu servicio. Fui creado por un estudiante de ingeniería como un modelo de lenguaje educativo.",
+                            "Soy Linkius AI, un asistente creado en un entorno académico para explorar el potencial del lenguaje natural."
+                        ];
+                        // Función que se ejecuta cuando el usuario dice "hola como estas"
+                        if (userInput.toLowerCase().includes("hola como estas")) {
+                            // Seleccionar una respuesta aleatoria de la lista de saludos
+                            const randomIndex = Math.floor(Math.random() * saludos.length);
+                            assistantResponse = saludos[randomIndex];
+                            needsAPI = false;
+                        } else if (userInput.toLowerCase().includes("quien eres")) {
+                            assistantResponse = quiensoy[Math.floor(Math.random() * quiensoy.length)];
+                            needsAPI = false;
+                        }
+                        else if (userInput.toLowerCase().includes("hola")) {
+                            // Seleccionar una respuesta aleatoria de la lista de saludos
+                            const randomIndex = Math.floor(Math.random() * respuestasSaludo.length);
+                            assistantResponse = respuestasSaludo[randomIndex] + " ¿En qué puedo ayudarte hoy?";
+                            needsAPI = false;
+                        } else if (userInput.toLowerCase().includes("quien es tu creador")) {
+                            assistantResponse = respuestascreador[Math.floor(Math.random() * respuestascreador.length)];
+                            needsAPI = false;
+                        } else if (userInput.toLowerCase().includes("que puedes hacer")) {
+                            // Seleccionar una respuesta aleatoria de la lista de habilidades
+                            const randomIndex = Math.floor(Math.random() * respuestasHabilidades.length);
+                            assistantResponse = respuestasHabilidades[randomIndex];
+                            needsAPI = false;
+                        } else if (userInput.toLowerCase().includes("como te crearon")) {
+                            // Seleccionar una respuesta aleatoria de la lista de creación
+                            const randomIndex = Math.floor(Math.random() * respuestasCreacion.length);
+                            assistantResponse = respuestasCreacion[randomIndex];
+                            needsAPI = false;
+                        } else if (userInput.toLowerCase().includes("quien es miguel vila")) {
+                            assistantResponse = "Miguel Vila es un programador y estudiante de ingeniería de sistemas.";
+                            needsAPI = false;
+                        } else if (userInput.toLowerCase().includes("qr") || userInput.toLowerCase().includes("generar código qr")) {
+                            const url = extractUrl(userInput);
+                            if (url) {
+                                assistantResponse = "Aquí está el código QR para la URL que mencionaste:";
+                                displayBotMessageProgresivamente(assistantResponse);
+                                displayQRCode(url);
+                                return;
+                            } else {
+                                assistantResponse = "No pude encontrar una URL válida para generar el código QR. Por favor, ingresa una URL.";
+                                needsAPI = false;
+                            }
+                        } else if (userInput.toLowerCase().includes("imagen") || userInput.toLowerCase().includes("generar imagen")) {
+                            const prompt = extractPrompt(userInput);
+                            if (prompt) {
+                                assistantResponse = "Aquí está la imagen que solicitaste:";
+                                displayBotMessageProgresivamente(assistantResponse);
+                                generateImage(prompt);
+                                return;
+                            } else {
+                                assistantResponse = "Por favor, proporciona una descripción de la imagen que te gustaría generar.";
+                                needsAPI = false;
+                            }
+                        } else {
+                            needsAPI = true;
+                        }
+
+                        // Si no se necesita la API, muestra la respuesta generada automáticamente
+                        if (!needsAPI) {
+                            displayBotMessageProgresivamente(assistantResponse);
+                        } else {
+                            // Llamar a la API si no hay respuesta predefinida
+                            fetch('https://openrouter.ai/api/v1/chat/completions', {
+                                method: 'POST',
+                                headers: {
+                                    Authorization: 'Bearer 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',
+                                    'HTTP-Referer': '<your_site_url>',
+                                    'X-Title': '<your_site_name>',
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({
+                                    model: 'deepseek/deepseek-r1:free',
+                                    messages: [{ role: 'user', content: userInput }],
+                                }),
+                            })
+                                .then(res => res.json())
+                                .then(data => {
+                                    const markdownText = data.choices?.[0]?.message?.content || 'No se recibió respuesta.';
+                                    displayBotMessageProgresivamente(markdownText);
+                                })
+                                .catch(error => {
+                                    displayBotMessageProgresivamente("Ocurrió un error al contactar al servicio: " + error.message);
+                                });
+                        }
+
+                        // Mostrar la respuesta del bot
+                        //    displayBotMessageProgresivamente(assistantResponse);
+                    });
+
+                    // Lógica para enviar mensaje con la tecla "Enter"
+                    document.getElementById("user-input").addEventListener("keydown", function (event) {
+                        if (event.key === "Enter" && !event.shiftKey) {
+                            event.preventDefault();
+                            document.getElementById("submit-btn").click();
+                        }
+                    });
+
+                    // Función para extraer una URL del mensaje
+                    function extractUrl(text) {
+                        const urlPattern = /https?:\/\/[a-zA-Z0-9.-]+\.[a-zA-Z]{2,3}(\/\S*)?|\b[a-zA-Z0-9.-]+\.[a-zA-Z]{2,3}\b/g;
+                        const result = text.match(urlPattern);
+                        return result ? result[0] : null;
+                    }
+
+                    // Función para extraer el "prompt" de la imagen
+                    function extractPrompt(text) {
+                        const promptPattern = /generar imagen de (.+)/i;
+                        const result = text.match(promptPattern);
+                        return result ? result[1] : null;
+                    }
+
+                    // Función para generar un código QR
+                    function generateQRCode(url) {
+                        const qrCodeImage = document.createElement("img");
+                        qrCodeImage.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(url)}`;
+                        return qrCodeImage;
+                    }
+
+                    // Función para mostrar el código QR en la interfaz
+                    function displayQRCode(url) {
+                        const qrCodeImage = generateQRCode(url);
+                        const imageContainer = document.createElement("div");
+                        imageContainer.appendChild(qrCodeImage);
+                        document.getElementById("chat-log").appendChild(imageContainer);
+                    }
+
+                    // Función para generar y mostrar una imagen
+                    function generateImage(prompt) {
+                        const height = 360;
+                        const width = 480;
+                        const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?nologo=1&height=${height}&width=${width}`;
+                        const image = document.createElement("img");
+                        image.src = imageUrl;
+                        const imageContainer = document.createElement("div");
+                        imageContainer.appendChild(image);
+                        document.getElementById("chat-log").appendChild(imageContainer);
+                    }
+
+                    // Función para leer el mensaje en voz alta
+                    function speakMessage(text) {
+                        const language = detectLanguage(text);
+                        const speech = new SpeechSynthesisUtterance(text);
+                        const voices = window.speechSynthesis.getVoices();
+
+                        for (const voice of voices) {
+                            if (voice.lang === language) {
+                                speech.voice = voice;
+                                break;
+                            }
+                        }
+
+                        speech.lang = language;
+                        speech.volume = 1;
+                        speech.rate = 1;
+                        speech.pitch = 1;
+                        window.speechSynthesis.speak(speech);
+                    }
+
+                    // Función para detectar el idioma automáticamente
+                    function detectLanguage(text) {
+                        const spanishWords = ['yo', 'tú', 'nosotros', 'buenos', 'hola', 'como', 'estás', 'ser', 'libro', 'hacer'];
+                        const englishWords = ['you', 'i', 'we', 'hello', 'book', 'to', 'are', 'have'];
+                        const portugueseWords = ['você', 'eu', 'nós', 'olá', 'livro', 'fazer'];
+                        const japaneseWords = ['こんにちは', '本', 'あなた', '私', 'です'];
+                        const koreanWords = ['안녕하세요', '책', '당신', '나', '입니다'];
+
+                        const words = text.toLowerCase().split(/\s+/);
+                        let spanishCount = 0, englishCount = 0, portugueseCount = 0, japaneseCount = 0, koreanCount = 0;
+
+                        words.forEach(word => {
+                            if (spanishWords.includes(word)) spanishCount++;
+                            if (englishWords.includes(word)) englishCount++;
+                            if (portugueseWords.includes(word)) portugueseCount++;
+                            if (japaneseWords.includes(word)) japaneseCount++;
+                            if (koreanWords.includes(word)) koreanCount++;
+                        });
+
+                        if (spanishCount > englishCount && spanishCount > portugueseCount && spanishCount > japaneseCount && spanishCount > koreanCount) {
+                            return 'es-ES';
+                        } else if (englishCount > spanishCount && englishCount > portugueseCount && englishCount > japaneseCount && englishCount > koreanCount) {
+                            return 'en-US';
+                        } else if (portugueseCount > spanishCount && portugueseCount > englishCount && portugueseCount > japaneseCount && portugueseCount > koreanCount) {
+                            return 'pt-PT';
+                        } else if (japaneseCount > spanishCount && japaneseCount > englishCount && japaneseCount > portugueseCount && japaneseCount > koreanCount) {
+                            return 'ja-JP';
+                        } else if (koreanCount > spanishCount && koreanCount > englishCount && koreanCount > portugueseCount && koreanCount > japaneseCount) {
+                            return 'ko-KR';
+                        }
+                        return 'es-ES';
+                    }
+                    document.addEventListener('DOMContentLoaded', function () {
+                        const welcomeMessage = document.getElementById('welcome-message');
+                        const inputField = document.querySelector('#user-input'); // Cambia esto si tu input tiene otro ID
+                        if (inputField) {
+                            inputField.addEventListener('input', function () {
+                                if (inputField.value.trim() !== "") {
+                                    welcomeMessage.style.transition = 'opacity 0.5s ease';
+                                    welcomeMessage.style.opacity = '0';
+                                    setTimeout(() => {
+                                        welcomeMessage.style.display = 'none';
+                                    }, 500);
+                                }
+                            });
+                        } else {
+                            console.warn("No se encontró el input con ID #user-input");
+                        }
+                    });
+                    function loadGame(gameUrl) {
+                        const chatLog = document.getElementById("chat-log");
+                        if (!chatLog) {
+                            console.error("No se encontró el contenedor #chat-log.");
+                            return;
+                        }
+
+                        const gameWrapper = document.createElement("div");
+                        gameWrapper.className = "message-wrapper game";
+
+                        const iframe = document.createElement("iframe");
+                        iframe.src = gameUrl;
+                        iframe.width = "100%";
+                        iframe.style.border = "none";
+                        iframe.style.transition = "height 0.3s ease";
+                        iframe.allow = "fullscreen";
+                        iframe.setAttribute("sandbox", "allow-scripts allow-same-origin allow-forms"); // seguridad
+
+                        iframe.onload = () => {
+                            try {
+                                // Pedir altura inicial después de carga
+                                iframe.contentWindow.postMessage({ tipo: "solicitarAltura" }, "*");
+                            } catch (e) {
+                                console.warn("No se pudo solicitar la altura del iframe:", e);
+                            }
+                        };
+
+                        iframe.setAttribute("data-game", gameUrl);
+                        gameWrapper.appendChild(iframe);
+                        chatLog.appendChild(gameWrapper);
+                        chatLog.scrollTop = chatLog.scrollHeight;
+                    }
+
+                    // Escuchar mensajes del iframe
+                    window.addEventListener("message", function (event) {
+                        if (event.data && event.data.tipo === "ajustarAltura") {
+                            const altura = parseInt(event.data.altura);
+                            if (!isNaN(altura)) {
+                                const iframes = document.querySelectorAll("iframe");
+                                for (const iframe of iframes) {
+                                    try {
+                                        if (iframe.contentWindow === event.source) {
+                                            iframe.style.height = altura + "px";
+                                            break;
+                                        }
+                                    } catch (e) {
+                                        console.error("Error al ajustar la altura del iframe:", e);
+                                    }
+                                }
+                            }
+                        }
+                    });
+    </script>
+
+</body>
+
+</html>

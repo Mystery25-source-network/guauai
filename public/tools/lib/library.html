@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Librería Pública y Visor</title>
+    <link rel="icon" href="image-modified.png" type="image/png">
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            background: #948979;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        header {
+            background: #213448;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            width: 100%;
+        }
+
+        #busqueda-box {
+            display: flex;
+            justify-content: center;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+
+        input[type="text"] {
+            padding: 12px;
+            width: 300px;
+            border: 1px solid #ccc;
+            border-radius: 5px 0 0 5px;
+            font-size: 16px;
+            outline: none;
+        }
+
+        button {
+            padding: 12px 20px;
+            background: #213448;
+            color: white;
+            border: none;
+            font-size: 16px;
+            border-radius: 0 5px 5px 0;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background: #213448;
+        }
+
+        #resultados {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            padding: 20px;
+            max-width: 1200px;
+        }
+
+        .libro {
+            background: #9e8152;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 250px;
+            text-align: center;
+            transition: transform 0.2s;
+        }
+
+        .libro:hover {
+            transform: translateY(-5px);
+        }
+
+        .libro h3 {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        .libro p {
+            font-size: 14px;
+            color: #555;
+        }
+
+        .libro a {
+            margin-top: 10px;
+            display: inline-block;
+            padding: 10px;
+            background: #03dac6;
+            color: black;
+            text-decoration: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .libro a:hover {
+            background: #018786;
+        }
+
+        .libro img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 5px;
+        }
+
+        iframe {
+            width: 90%;
+            height: 75vh;
+            margin: 40px 0 20px;
+            border: none;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            max-width: 1000px;
+            display: none;
+        }
+
+        .mensaje-error {
+            margin: 20px;
+            font-size: 18px;
+            color: #c00;
+            text-align: center;
+            display: none;
+        }
+        .back-button {
+    display: block;
+    width: fit-content;
+    margin: 40px auto 0;
+    padding: 12px 24px;
+    font-size: 1em;
+    font-weight: 600;
+    color: var(--button-text);
+    background: linear-gradient(135deg, #4a90e2, #3a78c2);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    text-transform: uppercase;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.back-button:hover {
+    background: linear-gradient(135deg, #3a78c2, #4a90e2);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+    transform: translateY(-2px);
+}
+
+.back-button:active {
+    background: var(--button-active);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    transform: translateY(2px);
+}
+
+@media (max-width: 600px) {
+    .container {
+        padding: 25px;
+    }
+
+    h1 {
+        font-size: 2em;
+    }
+
+    p {
+        font-size: 1em;
+    }
+}
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>📚 LINKIUS Library</h1>
+        <p>Lee sin límites: miles de libros gratis al alcance de un clic.</p>
+    </header>
+
+    <div id="busqueda-box">
+        <input type="text" id="busqueda" placeholder="Buscar libros por título..."
+            onkeypress="if(event.key === 'Enter') buscar()">
+        <button onclick="buscar()">Buscar</button>
+    </div>
+    <div id="resultados"></div>
+    <button class="back-button" onclick="history.back()">← Regresar</button>
+    <iframe id="visorLibro" title="Visor del libro"></iframe>
+    <div id="mensajeError" class="mensaje-error">No se pudo cargar el libro seleccionado.</div>
+
+    <script>
+        async function buscar(titulo = "") {
+            const resultadosDiv = document.getElementById("resultados");
+            const visor = document.getElementById("visorLibro");
+            const mensajeError = document.getElementById("mensajeError");
+            visor.style.display = "none";
+            mensajeError.style.display = "none";
+            resultadosDiv.innerHTML = "<p style='text-align:center;'>🔍 Buscando libros...</p>";
+
+            const url = `https://openlibrary.org/search.json?${titulo ? `title=${encodeURIComponent(titulo)}&` : ''}has_fulltext=true&public_scan_b=true&limit=12`;
+
+            try {
+                const respuesta = await fetch(url);
+                const datos = await respuesta.json();
+
+                if (!datos.docs.length) {
+                    resultadosDiv.innerHTML = "<p style='text-align:center;'>❌ No se encontraron libros disponibles.</p>";
+                    return;
+                }
+
+                resultadosDiv.innerHTML = "";
+
+                datos.docs.forEach(libro => {
+                    const iaId = libro.ia ? libro.ia[0] : null;
+                    const coverUrl = libro.cover_i ? `https://covers.openlibrary.org/b/id/${libro.cover_i}-L.jpg` : '';
+
+                    if (!iaId) return;
+
+                    const div = document.createElement("div");
+                    div.className = "libro";
+                    div.innerHTML = `
+                        ${coverUrl ? `<img src="${coverUrl}" alt="Portada de ${libro.title}">` : ''}
+                        <h3>${libro.title}</h3>
+                        <p><strong>Autor:</strong> ${libro.author_name ? libro.author_name.join(", ") : "Desconocido"}</p>
+                        <a href="#" onclick="mostrarLibro('${iaId}'); return false;">📖 Leer</a>
+                    `;
+                    resultadosDiv.appendChild(div);
+                });
+            } catch (error) {
+                console.error("Error al buscar libros:", error);
+                resultadosDiv.innerHTML = "<p style='text-align:center;'>⚠️ Error al conectar con Open Library.</p>";
+            }
+        }
+
+        function mostrarLibro(iaId) {
+            const visor = document.getElementById("visorLibro");
+            const mensajeError = document.getElementById("mensajeError");
+
+            if (iaId) {
+                visor.src = `https://archive.org/embed/${iaId}`;
+                visor.style.display = "block";
+                mensajeError.style.display = "none";
+                visor.scrollIntoView({ behavior: "smooth" });
+            } else {
+                visor.style.display = "none";
+                mensajeError.style.display = "block";
+            }
+        }
+
+        window.onload = () => buscar("classic literature");
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,137 @@
+@import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap');
+@import url('https: //fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
+:root {
+    --main-bg: #F6F1DE;
+    --content-bg: #E9DFC3;
+    --accent: #1a73e8;
+    --text-color: #1c1c1e;
+    --subtext-color: #4a4a4a;
+    --border-radius: 10px;
+    --shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+    --font-main: 'Inter', 'Segoe UI', Roboto, Arial, sans-serif;
+    --button-bg: #4a90e2;
+    --button-text: #fff;
+    --button-hover: #3a78c2;
+    --button-active: #2f67a0;
+    --button-border: 2px solid #ffffff;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: var(--font-main);
+    background-color: var(--main-bg);
+    color: var(--text-color);
+    padding: 24px;
+    line-height: 1.75;
+    font-size: 1rem;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 48px;
+}
+
+h1 {
+    color: var(--accent);
+    font-size: 2.4rem;
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+
+h2 {
+    color: var(--text-color);
+    font-size: 1.5rem;
+    margin-top: 32px;
+    margin-bottom: 16px;
+    font-weight: 500;
+}
+
+.container {
+    max-width: 960px;
+    margin: auto;
+}
+
+.section {
+    background-color: var(--content-bg);
+    padding: 32px;
+    margin-bottom: 48px;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    border: 1px solid #e0e0e0;
+}
+
+p,
+li {
+    margin-bottom: 14px;
+    color: var(--subtext-color);
+}
+
+ul {
+    margin: 12px 0 24px 24px;
+    list-style-type: disc;
+}
+
+footer {
+    text-align: center;
+    font-size: 0.85em;
+    margin-top: 48px;
+    color: #7a7a7a;
+}
+
+a {
+    color: var(--accent);
+    text-decoration: underline;
+}
+
+a:hover {
+    color: #0f5bd8;
+}
+.back-button {
+    display: block;
+    width: fit-content;
+    margin: 40px auto 0;
+    padding: 12px 24px;
+    font-size: 1em;
+    font-weight: 600;
+    color: var(--button-text);
+    background: linear-gradient(135deg, #4a90e2, #3a78c2);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    text-transform: uppercase;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.back-button:hover {
+    background: linear-gradient(135deg, #3a78c2, #4a90e2);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+    transform: translateY(-2px);
+}
+
+.back-button:active {
+    background: var(--button-active);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    transform: translateY(2px);
+}
+
+@media (max-width: 600px) {
+    .container {
+        padding: 25px;
+    }
+
+    h1 {
+        font-size: 2em;
+    }
+
+    p {
+        font-size: 1em;
+    }
+}

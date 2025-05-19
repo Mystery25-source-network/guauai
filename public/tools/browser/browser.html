@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BYR BROWSER</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/materialize-css@1.0.0/dist/css/materialize.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="logoweb.png" type="image/png">
+    <script src="finisher-header.es5.min.js" type="text/javascript"></script>
+    
+
+</head>
+
+<body>
+    <h1>BYR BROWSER</h1>
+        <div id="vanta-bg"></div>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r121/three.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/vanta/0.5.21/vanta.globe.min.js"></script>
+        <script>
+            VANTA.GLOBE({
+                el: "#vanta-bg",
+                mouseControls: true,
+                touchControls: true,
+                gyroControls: false,
+                minHeight: 200.00,
+                minWidth: 200.00,
+                scale: 1.00,
+                scaleMobile: 1.00,
+                color: 0x0077be,
+                color2: 0x000000,
+                backgroundColor: 0x000000,
+                size: 1.00,
+                points: 15.00,
+                maxDistance: 20.00,
+                spacing: 15.00,
+                texture: 'https://threejs.org/examples/textures/land_ocean_ice_cloud_2048.jpg'
+            });
+        </script>
+        
+        <div class="container">
+            <div class="time-container">
+                <span id="time"></span>
+            </div>
+            <div class="date-container">
+                <span id="date"></span>
+                <span id="day"></span>
+            </div>
+            <div class="greeting-container">
+                <span id="greeting"></span>
+            </div>
+            <div class="weather-container">
+                <i class="weather-icon" id="weatherIcon"></i>
+                <span id="weather"></span>
+                <span id="weatherText"></span>
+            </div>
+        
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="Search web">
+                <div class="btn-container">
+                    <button id="searchBtn" type="button"><i class="fas fa-search"></i>
+                        <button id="luckyBtn" type="button">I'm Feeling Lucky</button>
+                </div>
+            </div>
+        
+            <div class="tabs-container">
+                <div class="tab">
+        
+                    <span></span>
+                </div>
+                <div class="tab">
+        
+                    <span></span>
+                </div>
+                <div class="tab-button">
+                    <button class="tab-btn"onclick="history.back()">
+                            <img src="image-modified.png" alt="Streamlit">
+                        <span>Ghost AI</span>
+                    </button>          </div>
+                <div class="tab">
+        
+                    <span></span>
+                </div>
+                <div class="tab">
+        
+                    <span></span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="quote-container">
+            <span id="quote"></span>
+        </div>
+        
+        <script src="https://cdn.jsdelivr.net/npm/materialize-css@1.0.0/dist/js/materialize.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script>
+        // Actualiza la hora cada segundo
+        function updateTime() {
+            const now = new Date();
+            let hours = now.getHours();
+            const minutes = now.getMinutes();
+            const seconds = now.getSeconds();
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12 || 12;
+            const timeString = `${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')} ${ampm}`;
+            document.getElementById('time').textContent = timeString;
+        }
+        setInterval(updateTime, 1000);
+
+        // Fecha y día
+        function updateDate() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = now.toLocaleString('default', { month: 'long' });
+            const day = now.getDate();
+            const dayOfWeek = now.toLocaleString('default', { weekday: 'long' });
+            document.getElementById('date').textContent = `${month} ${day}, ${year}`;
+            document.getElementById('day').textContent = `${dayOfWeek}`;
+        }
+        updateDate();
+
+        // Saludo dinámico
+        function updateGreeting() {
+            const hours = new Date().getHours();
+            let greeting;
+            if (hours < 6) greeting = 'Good night,';
+            else if (hours < 12) greeting = 'Good morning,';
+            else if (hours < 14) greeting = 'Good afternoon,';
+            else greeting = 'Good evening,';
+            document.getElementById('greeting').textContent = greeting;
+        }
+        updateGreeting();
+
+        // Frases aleatorias
+        const quotes = [
+                "Quantum computing",
+                "Best pasta recipes",
+                "JavaScript tutorials",
+                "How to learn Python",
+                "SpaceX latest news",
+                "Fun coding games",
+                "How to meditate",
+                "Virtual reality trends",
+                "History of AI",
+                "Music theory basics",
+                "Top 10 Netflix shows",
+                "DIY home decor ideas",
+                "Beginner yoga poses",
+                "How black holes form",
+                "Best productivity apps",
+                "Machine learning examples",
+                "Healthy smoothie recipes",
+                "What is blockchain",
+                "Famous painting techniques",
+                "How to train a dog",
+                "Budget travel destinations",
+                "Learn Spanish online free",
+                "Electric cars pros and cons",
+                "How to start a blog",
+                "Best books of all time",
+                "How to improve memory",
+                "Climate change facts",
+                "iPhone vs Android comparison",
+                "How to write a resume",
+                "History of ancient Egypt",
+                "Cryptocurrency for beginners",
+                "Best video editing software",
+                "How to play chess",
+                "Solar energy advantages",
+                "What is the metaverse",
+                "Motivational podcasts",
+                "Best hiking trails near me",
+                "Tips for remote work",
+                "How to draw manga",
+                "What causes earthquakes",
+                "Beginner guitar chords",
+                "Famous philosophers quotes",
+                "How to brew coffee properly",
+                "Interesting facts about cats",
+                "Best time to visit Japan",
+                "How to start investing",
+                "Augmented reality vs virtual reality",
+                "Home workout routines",
+                "Benefits of journaling"
+            ];
+        function updateQuote() {
+            const randomIndex = Math.floor(Math.random() * quotes.length);
+            document.getElementById('quote').textContent = quotes[randomIndex];
+        }
+        updateQuote();
+
+        // Simula clima
+        function updateWeather(temperature) {
+            const icon = document.getElementById('weatherIcon');
+            const text = document.getElementById('weatherText');
+            const tempDisplay = document.getElementById('weather');
+
+            if (temperature < 15) {
+                icon.className = 'weather-icon fas fa-snowflake';
+                text.textContent = 'Cold';
+            } else if (temperature < 25) {
+                icon.className = 'weather-icon fas fa-cloud-sun';
+                text.textContent = 'Mild';
+            } else if (temperature < 35) {
+                icon.className = 'weather-icon fas fa-sun';
+                text.textContent = 'Hot';
+            } else {
+                icon.className = 'weather-icon fas fa-meteor';
+                text.textContent = 'Extreme';
+            }
+
+            tempDisplay.textContent = `${temperature}°C`;
+        }
+        const temperature = 25;
+        updateWeather(temperature);
+
+        // =======================
+        // FUNCIONES DE BÚSQUEDA
+        // =======================
+
+        const searchInput = document.getElementById('searchInput');
+        const searchBtn = document.getElementById('searchBtn');
+        const luckyBtn = document.getElementById('luckyBtn');
+
+        const randomSearches = [
+            "Quantum computing",
+            "Best pasta recipes",
+            "JavaScript tutorials",
+            "How to learn Python",
+            "SpaceX latest news",
+            "Fun coding games",
+            "How to meditate",
+            "Virtual reality trends",
+            "History of AI",
+            "Music theory basics"
+        ];
+
+        function performSearch(query) {
+            const searchUrl = `https://www.searx.org/search?q=${encodeURIComponent(query)}`;
+            window.location.href = searchUrl;
+        }
+
+        // Búsqueda normal con botón
+        searchBtn.addEventListener('click', () => {
+            const query = searchInput.value.trim();
+            if (query) {
+                performSearch(query);
+                searchInput.value = '';
+            }
+        });
+
+        // Búsqueda al presionar ENTER
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                searchBtn.click();
+            }
+        });
+
+        // I'm Feeling Lucky
+        luckyBtn.addEventListener('click', () => {
+            confetti({ spread: 360 });
+            const randomIndex = Math.floor(Math.random() * randomSearches.length);
+            const luckyQuery = randomSearches[randomIndex];
+            performSearch(luckyQuery);
+        });
+
+    </script>
+</body>
